@@ -3,7 +3,6 @@ import farm_utils
 from pprint import pprint
 import sys
 from pm_test import *
-from P1racks import P1racks
 from operator import attrgetter
 import socket
 import string
@@ -13,7 +12,7 @@ local_host = local.local_computer()
 
 dcm_segments = []
 service_node = local_host
-worker_nodes = []
+worker_nodes = [local_host]
 dcm_segments.append(dcm_segment("HLT-Segment-01", service_node, worker_nodes,
                                 service_node, service_node))
 
