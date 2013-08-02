@@ -9,7 +9,6 @@ import os
 
 includes = ['daq/segments/setup.data.xml',
             'daq/schema/hltsv.schema.xml',
-            'daq/schema/HLTMPPU.schema.xml',
             'daq/sw/repository.data.xml',
             'dcm/schema/dcm_is.schema.xml',
             'daq/schema/dcm.schema.xml',
@@ -49,7 +48,7 @@ def create_config_rules(db):
     def_config_rules.Rules.append(is_config_rule)
     db.updateObjects([def_config_rules])
 
-def create_template_applications(db):
+def create_hltpu_templates(db):
     """
     Here create the template applications of the DCM segments that only need to be created once
     """
@@ -63,7 +62,15 @@ def create_template_applications(db):
     hltmppu_template.RestartableDuringRun = True
     db.updateObjects([hltmppu_template])
     create_hltpu_application(db)
-    create_dcm_application(db)
+    
+def create_template_applications(db, dcm_only, hltpu_only):
+    if dcm_only:
+        create_dcm_application(db)
+    elif hltpu_only:
+        create_hltpu_templates(db)
+    else:
+        create_dcm_application(db)
+        create_hltpu_templates(db)
 
 def create_hltsv_app(db, hltsv_host):
     hltsv_dal = dal_module("hltsv_dal", 'daq/schema/hltsv.schema.xml')
@@ -260,10 +267,11 @@ def create_hlt_segment(db, default_host, hltsv_host, dcm_segments):
     hltsv_segment.IsControlledBy = defrc_controller
     hltsv_app = create_hltsv_app(db, hltsv_host)
 
-    sfo_app_1 = create_sfo_application(db, "1", "pc-tbed-r3-21.cern.ch")
-    sfo_app_2 = create_sfo_application(db, "2", "pc-tbed-r3-22.cern.ch")
-    sfo_app_3 = create_sfo_application(db, "3", "pc-tbed-r3-23.cern.ch")
-    sfo_app_4 = create_sfo_application(db, "4", "pc-tbed-r3-24.cern.ch")
+    
+    sfo_app_1 = create_sfo_application(db, "1", hltsv_host.id)
+    sfo_app_2 = create_sfo_application(db, "2", hltsv_host.id)
+    sfo_app_3 = create_sfo_application(db, "3", hltsv_host.id)
+    sfo_app_4 = create_sfo_application(db, "4", hltsv_host.id)
     
     hltsv_segment.Resources.append(hltsv_app)
     """
