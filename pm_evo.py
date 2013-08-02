@@ -1,3 +1,5 @@
+#!/usr/bin/env tdaq_python
+
 import pm.farm
 from farm_utils import *
 from pprint import pprint
@@ -9,12 +11,19 @@ from pm_partition import create_partition
 
 def create_config_db(args):
     exec("from " + args.farm_file + " import farm_dict")
-    repository_root = ""
+    
+    repository_root = args.repository_root
     data_networks = args.data_networks
     multicast_address = args.multicast_address
 
     full_includes = includes + args.extra_includes
     db = Project(farm_dict['name'] + ".data.xml", full_includes)
+    if args.local:
+        lh = farm_dict['default_host']
+        for iface in lh.Interfaces: db.updateObjects([iface])
+        db.updateObjects([lh])
+
+    
     hlt_segments = []
     part_segments = []
     
@@ -64,6 +73,8 @@ def main():
     parser.add_argument("--dcm-only", required=False, default=False,
                         action="store_true")
     parser.add_argument("--hltpu-only", required=False, default=False,
+                        action="store_true")
+    parser.add_argument("--local", required=False, default=False,
                         action="store_true")
     args = parser.parse_args()
     pprint(args)
