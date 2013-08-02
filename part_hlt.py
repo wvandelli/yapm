@@ -11,7 +11,8 @@ def create_gatherer_application(db, segment_name):
      gatherer_app.Parameters = "-n Gatherer-" + segment_name
      gatherer_app.RestartParameters = "-n Gatherer-" + segment_name
      gatherer_app.Program = db.getObject("Binary", "Gatherer")
-     gatherer_config = db.getObject("GATHERERConfiguration", "GathererConfiguration-Segment")
+     gatherer_config = db.getObject("GATHERERConfiguration",
+                                    "GathererConfiguration-Segment")
      gatherer_app.GATHERERConfiguration.append(gatherer_config)
      db.updateObjects([gatherer_app])
 
@@ -21,18 +22,20 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
      dal_script_name = os.path.splitext(script_name)[0]
      aggregator_script = dal.Script(dal_script_name)
      aggregator_script.BinaryName = script_name
-     repository = db.getObject("SW_Repository", "Det TDAQ")
+     repository = db.getObject("SW_Repository", "Online")
      aggregator_script.BelongsTo = repository
      db.updateObjects([aggregator_script])
      if not segment_name == "":
-          aggregator_app = dal.Application("DCM-" + dal_script_name + "-" + segment_name)
+          aggregator_app = dal.Application("DCM-" + dal_script_name + "-" +
+                                           segment_name)
      else:
           aggregator_app = dal.Application("DCM-" + dal_script_name)
      aggregator_app.Program = aggregator_script
      aggregator_app.RunsOn = default_host
-     aggregator_app.Parameters = "5"
-     aggregator_app.RestartParameters = "5"
+     aggregator_app.Parameters = "-T DCM"
+     aggregator_app.RestartParameters = "-T DCM"
      aggregator_app.InitTimeout = 0
+     aggregator_app.StartAt = "SOR"
      aggregator_app.RestartableDuringRun = True
      env_tdaq_python_home = db.getObject('Variable', 'TDAQ_PYTHON_HOME')
      env_pythonpath = db.getObject('Variable', 'PYTHONPATH')
@@ -85,11 +88,11 @@ def create_dcm_segment(**dcm_args):
 
      defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
      dcm_segment.IsControlledBy = defrc_controller
-     """
+     
      aggregator_app = (create_aggregator_app(db, "aggregator.py",
                                              dcm_args['default_host'], name))
      dcm_segment.Applications.append(aggregator_app)
-     """
+     
           
      #infrastructure applications
      is_server = (create_is_server(db, "DF-" + name + "-iss", "TDAQ_IS_SERVER",
