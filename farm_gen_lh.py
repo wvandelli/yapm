@@ -7,19 +7,22 @@ from P1racks import P1racks
 from operator import attrgetter
 import socket
 import string
+import local
 
-host_name = string.split(socket.gethostname(), '.')[0]
+local_host = local.local_computer()
 
 dcm_segments = []
-testbed_hosts = farm_utils.get_hosts(['daq/hw/hosts.data.xml'])
-service_node = testbed_hosts[host_name]
+service_node = local_host
 worker_nodes = []
 dcm_segments.append(dcm_segment("HLT-Segment-01", service_node, worker_nodes,
                                 service_node, service_node))
 
+dcm_segments.append(dcm_segment("HLT-Segment-02", service_node, worker_nodes,
+                                service_node, service_node))
 
-hltsv_host = testbed_hosts[host_name]
-controller_host = testbed_hosts[host_name]
+
+hltsv_host = local_host
+controller_host = local_host
 
 partition_name = "azar_test"
 farm_dict = partition(partition_name, controller_host, dcm_segments, hltsv_host)
