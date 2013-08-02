@@ -28,7 +28,7 @@ def create_config_db(args):
     part_segments = []
     
     create_config_rules(db)
-    create_template_applications(db)
+    create_template_applications(db, args.dcm_only, args.hltpu_only)
     hlt_segment = (create_hlt_segment(db, farm_dict['default_host'],
                                       farm_dict['hltsv'], hlt_segments))
     part_segments.append(hlt_segment)
