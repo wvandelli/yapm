@@ -6,21 +6,8 @@ from config.dal import module as dal_module
 import sys
 from farm_utils import *
 import os
-"""
-includes = [
-          'daq/hw/hosts.data.xml',
-          'daq/segments/setup.data.xml',
-          'daq/schema/hltsv.schema.xml',
-          'daq/schema/HLTMPPU.schema.xml',
-          'daq/sw/repository.data.xml',
-          'daq/schema/dcm.schema.xml',
-          'daq/sw/tags.data.xml',
-          'daq/sw/common-templates.data.xml',
-          'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml']
-"""
 
 includes = ['daq/segments/setup.data.xml',
-            'daq/segments/setup-tbed.data.xml',
             'daq/schema/hltsv.schema.xml',
             'daq/schema/HLTMPPU.schema.xml',
             'daq/sw/repository.data.xml',
@@ -195,7 +182,7 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
     dal_script_name = os.path.splitext(script_name)[0]
     aggregator_script = dal.Script(dal_script_name)
     aggregator_script.BinaryName = script_name
-    repository = db.getObject("SW_Repository", "Det TDAQ")
+    repository = db.getObject("SW_Repository", "Online")
     aggregator_script.BelongsTo = repository
     db.updateObjects([aggregator_script])
     if not segment_name == "":
@@ -204,9 +191,10 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
         aggregator_app = dal.Application("DCM-" + dal_script_name)
     aggregator_app.Program = aggregator_script
     aggregator_app.RunsOn = default_host
-    aggregator_app.Parameters = "5"
-    aggregator_app.RestartParameters = "5"
+    aggregator_app.Parameters = "-T DCM"
+    aggregator_app.RestartParameters = "-T DCM"
     aggregator_app.InitTimeout = 0
+    aggregator_app.StartAt = "SOR"
     aggregator_app.RestartableDuringRun = True
     env_tdaq_python_home = db.getObject('Variable', 'TDAQ_PYTHON_HOME')
     env_pyhtonpath = db.getObject('Variable', 'PYTHONPATH')
@@ -276,17 +264,20 @@ def create_hlt_segment(db, default_host, hltsv_host, dcm_segments):
     sfo_app_2 = create_sfo_application(db, "2", "pc-tbed-r3-22.cern.ch")
     sfo_app_3 = create_sfo_application(db, "3", "pc-tbed-r3-23.cern.ch")
     sfo_app_4 = create_sfo_application(db, "4", "pc-tbed-r3-24.cern.ch")
+    
     hltsv_segment.Resources.append(hltsv_app)
+    """
     hltsv_segment.Resources.append(sfo_app_1)
     hltsv_segment.Resources.append(sfo_app_2)
     hltsv_segment.Resources.append(sfo_app_3)
     hltsv_segment.Resources.append(sfo_app_4)
+    """
 
     hltsv_segment.Resources.append(gatherer_app_top)
     hltsv_segment.DefaultHost = default_host
 
-    #aggregator_app = create_aggregator_app(db, "top_aggregator.py", default_host, "")
-    #hltsv_segment.Applications.append(aggregator_app)
+    aggregator_app = create_aggregator_app(db, "top_aggregator.py", default_host, "")
+    hltsv_segment.Applications.append(aggregator_app)
 
     db.updateObjects([hltsv_segment])
     
