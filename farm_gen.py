@@ -30,6 +30,6 @@ sfos = pm.farm.subselect_pattern(testbed_hosts,
                                  'pc-tbed-r3-[%02d-%02d]' % (21,22))
 partition_name = "azar_test"
 farm_dict = partition(partition_name, controller_host, dcm_segments,
-                      hltsv_host, sfos)
+                      hltsv_host, sfos.values())
 pprint(farm_dict)
 
