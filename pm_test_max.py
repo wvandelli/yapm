@@ -208,8 +208,8 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
     gatherer_config_top.ProviderRegExp = "Histogramming-.*"
     top_histo_server = db.getObject("InfrastructureApplication",
                                     "Histogramming")
-    gatherer_config_top.sources = [top_histo_server]
-    gatherer_config_top.destination_servers = [top_histo_server]
+    gatherer_config_top.SourceServers = [top_histo_server]
+    gatherer_config_top.DestinationServers = [top_histo_server]
 
     top_gatherer_app = gatherer_dal.MIGApplication("Gatherer-Top")
     top_gatherer_app.Parameters = "-n Gatherer-Top"
