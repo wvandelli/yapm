@@ -12,7 +12,7 @@ includes = ['daq/segments/setup.data.xml',
             'daq/sw/repository.data.xml',
             'dcm/schema/dcm_is.schema.xml',
             'daq/schema/HLTMPPU.schema.xml',
-            'dcm/schema/MonInfoGatherer.schema.xml',
+            'daq/schema/MonInfoGatherer.schema.xml',
             'daq/schema/dcm.schema.xml',
             'daq/sw/tags.data.xml',
             'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml']
