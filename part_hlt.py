@@ -5,16 +5,32 @@ and all directly related objects(gatherer, IS servers, aggregators)
 from config.dal import dal, DFdal
 import os
 
-#TOD0: make it use MIGApplication!!
-def create_gatherer_application(db, segment_name):
-    gatherer_app = DFdal.GATHERERApplication("Gatherer-" + segment_name)
-    gatherer_app.Parameters = "-n Gatherer-" + segment_name
-    gatherer_app.RestartParameters = "-n Gatherer-" + segment_name
-    gatherer_app.Program = db.getObject("Binary", "Gatherer")
-    gatherer_config = db.getObject("GATHERERConfiguration",
-                             "GathererConfiguration-Segment")
-    gatherer_app.GATHERERConfiguration.append(gatherer_config)
-    db.updateObjects([gatherer_app])
+def create_gatherer_application(db, segment_name, segment_oh_server):
+    app_name = "Gatherer-" + segment_name
+    gatherer_dal = dal_module("gatherer_dal",
+                              'daq/schema/MonInfoGatherer.schema.xml')
+    gatherer_algorithm = db.getObject("MIGAlgorithm",
+                                      "DefaultGathererAlgorithm")
+    info_handler = db.getObject("MIGInformationHandler",
+                                "DefaultGathererInformationHandler")
+
+    gatherer_config_segment = (gatherer_dal.MIGConfiguration
+                               ("GathererConfiguration-" + segment_name))
+    gatherer_config_segment.SourceServers = [segment_oh_server]
+    top_histo_server = db.getObject("InfrastructureApplication",
+                                    "Histogramming")
+    gatherer_config_segment.DestinationServers = [top_histo_server]
+    gatherer_config_segment.InformationHandler = info_handler
+    gatherer_config_segment.Algorithm = gatherer_algorithm
+    db.updateObjects([gatherer_config_segment])
+
+    segment_gatherer_app = gatherer_dal.MIGApplication(app_name)
+    segment_gatherer_app.Parameters = "-n " + app_name
+    segment_gatherer_app.RestartParameters = "-n " + app_name
+    gatherer_bin = db.getObject("Binary", "MonInfoGatherer")
+    segment_gatherer_app.Program = gatherer_bin
+    segment_gatherer_app.Configurations = [gatherer_config_segment]
+    db.updateObjects([segment_gatherer_app])
 
     return gatherer_app
 
@@ -27,7 +43,7 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
     db.updateObjects([aggregator_script])
     if not segment_name == "":
         aggregator_app = dal.Application("DCM-" + dal_script_name + "-" +
-                                   segment_name)
+                                         segment_name)
     else:
         aggregator_app = dal.Application("DCM-" + dal_script_name)
     aggregator_app.Program = aggregator_script
@@ -104,7 +120,7 @@ def create_dcm_segment(**dcm_args):
     dcm_segment.Infrastructure = [is_server, oh_server, rdb]
 
     #Resources
-    gatherer_app = create_gatherer_application(db, name)
+    gatherer_app = create_gatherer_application(db, name, oh_server)
     dcm_segment.Resources.append(gatherer_app)
 
     db.updateObjects([dcm_segment])
