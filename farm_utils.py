@@ -22,7 +22,7 @@ def dcm_segment(name, default_host, hosts, is_resource, is_histogram):
     dcm_dict['is_histogram'] = is_histogram
     return dcm_dict
 
-def partition(name, default_host, dcms, hltsv, sfos):
+def partition(default_host, dcms, hltsv, sfos):
     """returns a dictionary representation of a dcm segment as expected by
     the partition making script
     """
