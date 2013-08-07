@@ -61,7 +61,7 @@ def create_dcm_only(db):
      return [dcm_app]
 
 def create_hltpu_only(db):
-     hltrc_app = db.getObject("HLTMPPUApplication", "HLTRC")
+     hltrc_app = db.getObject("HLTRCApplication", "HLTRC")
      hltmppu_template = db.getObject("TemplateApplication", "HLTMPPU-Template")
      return [hltrc_app, hltmppu_template] 
 
