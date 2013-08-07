@@ -197,7 +197,7 @@ def create_aggregator_app(db, script_name, default_host, segment_name=""):
 
 def create_hlt_segment(db, default_host, hltsv_host, sfos):
     gatherer_dal = dal_module("gatherer_dal",
-                              'dcm/schema/MonInfoGatherer.schema.xml')
+                              'daq/schema/MonInfoGatherer.schema.xml')
      
     info_handler = (gatherer_dal.
                     MIGInformationHandler("DefaultGathererInformationHandler"))
