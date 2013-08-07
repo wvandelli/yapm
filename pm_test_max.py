@@ -114,7 +114,7 @@ def create_hltpu_application(db):
     db.updateObjects([hlt_mon_service])
 
     #now time to create the actual HLTMPPU application
-    hltrc_app = hltpu_dal.HLTMPPUApplication("HLTRC")
+    hltrc_app = hltpu_dal.HLTRCApplication("HLTRC")
     hltrc_app.DataSource = hlt_data_source
     hltrc_app.InfoService = hlt_mon_service
     hltrc_bin = db.getObject("Binary", "HLTRC_main")
