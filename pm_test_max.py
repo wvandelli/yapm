@@ -157,7 +157,7 @@ def create_dcm_application(db):
     
     dcm_app = dcm_dal.DcmApplication("dcm")
     dcm_app.l1Source = hltsv_l1source
-    dcm_app.dataCollector = dcm_ros_dc
+    dcm_app.dataCollector = dcm_dummy_dc
     dcm_app.processor = dcm_dummy_processor
     dcm_app.output = dcm_file_output
     dcm_app.Program = dcm_main
@@ -183,7 +183,6 @@ def create_aggregator_app(db, script_name, default_host, segment_name=""):
     aggregator_app.Parameters = "-T DCM"
     aggregator_app.RestartParameters = "-T DCM"
     aggregator_app.InitTimeout = 0
-    aggregator_app.StartAt = "SOR"
     aggregator_app.RestartableDuringRun = True
     env_tdaq_python_home = db.getObject('Variable', 'TDAQ_PYTHON_HOME')
     env_pyhtonpath = db.getObject('Variable', 'PYTHONPATH')
@@ -213,8 +212,6 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
     db.updateObjects([gatherer_config_top])
 
     top_gatherer_app = gatherer_dal.MIGApplication("Gatherer-Top")
-    top_gatherer_app.Parameters = "-n Gatherer-Top"
-    top_gatherer_app.RestartParameters = "-n Gatherer-Top"
     gatherer_bin = db.getObject("Binary", "MonInfoGatherer")
     top_gatherer_app.Program = gatherer_bin
     top_gatherer_app.Configurations = [gatherer_config_top]
@@ -257,10 +254,10 @@ def create_sfo_application(db, number, host):
     sfo_config.BufferSize_kB = 10240
     sfo_config.DataRecordingEnabled = False
     sfo_config.LumiBlockEnabled = False
-    sfo_config.DirectoriesToWriteData.append("/raid_cntl1/data")
+    sfo_config.DirectoriesToWriteData.append("/tmp")
     sfo_config.DirectoryWritingTime = 60
     sfo_config.DirectoryChangeTime = 15
-    sfo_config.DirectoryToWriteIndex = "/raid_cntl1/data"
+    sfo_config.DirectoryToWriteIndex = "/tmp"
     efio_config = db.getObject("EFIOConfiguration", "EFIO-Configuration-1")
     sfo_config.EFIOConfiguration = efio_config
     db.updateObjects([sfo_config])
