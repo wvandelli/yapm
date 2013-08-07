@@ -23,13 +23,13 @@ def create_config_rules(db):
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     
     default_is_publishing = (is_dal.ISPublishingParameters
-                    ("DefaulISpublishingParameters"))
+                             ("DefaulISpublishingParameters"))
     default_is_publishing.PublishInterval = 5
     default_is_publishing.ISServer = "${TDAQ_IS_SERVER=DF}"
     db.updateObjects([default_is_publishing])
     
     default_oh_publishing = (is_dal.OHPublishingParameters
-                    ("DefaulOHpublishingParameters"))
+                             ("DefaulOHpublishingParameters"))
     default_oh_publishing.PublishInterval = 5
     default_oh_publishing.OHServer = "${TDAQ_OH_SERVER=Histogramming}"
     default_oh_publishing.ROOTProvider = "${TDAQ_APPLICATION_NAME}"
