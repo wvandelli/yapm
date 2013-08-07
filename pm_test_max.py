@@ -196,6 +196,7 @@ def create_aggregator_app(db, script_name, default_host, segment_name=""):
     return aggregator_app
 
 def create_hlt_segment(db, default_host, hltsv_host, sfos):
+    """
     gatherer_dal = dal_module("gatherer_dal",
                               'daq/schema/MonInfoGatherer.schema.xml')
      
@@ -220,6 +221,7 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
     top_gatherer_app.Program = gatherer_bin
     top_gatherer_app.Configurations = [gatherer_config_top]
     db.updateObjects([top_gatherer_app])
+    """
     
     hltsv_segment = dal.Segment("HLT")
     defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
@@ -231,7 +233,7 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
         sfo_application = create_sfo_application(db, str(index), sfo_host)
         sfo_apps.append(sfo_application)
 
-    hltsv_resources = [hltsv_app, top_gatherer_app] + sfo_apps
+    hltsv_resources = [hltsv_app] + sfo_apps
     hltsv_segment.Resources = hltsv_resources
     
     hltsv_segment.DefaultHost = default_host
