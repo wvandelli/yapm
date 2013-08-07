@@ -228,7 +228,7 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
         sfo_application = create_sfo_application(db, str(index), sfo_host)
         sfo_apps.append(sfo_application)
 
-    hltsv_resources = [hltsv_app, gatherer_app_top] + sfo_apps
+    hltsv_resources = [hltsv_app, top_gatherer_app] + sfo_apps
     hltsv_segment.Resources = hltsv_resources
     
     hltsv_segment.DefaultHost = default_host
