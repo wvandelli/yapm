@@ -33,7 +33,7 @@ def create_gatherer_application(db, segment_name, segment_oh_server):
     segment_gatherer_app.Configurations = [gatherer_config_segment]
     db.updateObjects([segment_gatherer_app])
 
-    return gatherer_app
+    return segment_gatherer_app
 
 def create_aggregator_app(db, script_name, default_host, segment_name):
     dal_script_name = os.path.splitext(script_name)[0]
