@@ -4,6 +4,7 @@ related objects(counters etc.)
 
 """
 from pm.dal import dal, DFdal
+from pm.project import Project
 
 TAGS = [
         'x86_64-slc6-gcc47-opt',
@@ -18,15 +19,15 @@ def create_counters(db):
     l1_rates.Rate = "DF.HLTSV.Events.Rate"
     db.updateObjects([l1_rates])
     l2_rates = dal.IS_EventsAndRates("L2_counters")
-    l2_rates.EventCounter = "DF.DCM_summary_DF_top_sum.ProxL1Events"
+    l2_rates.EventCounter = "DF.DCM-top_aggregator.DCM.top.sum.ProxL1Events"
     l2_rates.Rate = "DF.DCM_summary_DF_top_sum.L1Rate"
     db.updateObjects([l2_rates])
-    eb_rates = dal.IS_EventsAndRates("DF.DCM_summary_DF_top_sum.EB_counters")
-    eb_rates.Rate = "DF.DCM_summary_DF_top_sum.EbRate"
-    eb_rates.EventCounter = "DF.DCM_summary_DF_top_sum.EbEvents"
+    eb_rates = dal.IS_EventsAndRates("DF.DCM-top_aggregator.DCM.top.sum.EB_counters")
+    eb_rates.Rate = "DF.DCM-top_aggregator.DCM.top.sum.EbRate"
+    eb_rates.EventCounter = "DF.DCM-top_aggregator.DCM.top.sum.EbEvents"
     db.updateObjects([eb_rates])
-    ef_rates = dal.IS_EventsAndRates("DF.DCM_summary_DF_top_sum.EF_counters")
-    ef_rates.Rate = "DF.DCM_summary_DF_top_sum.OutRate"
+    ef_rates = dal.IS_EventsAndRates("DF.DCM-top_aggregator.DCM.top.sum.EF_counters")
+    ef_rates.Rate = "DF.DCM-top_aggregator.DCM.top.sum.OutRate"
     ef_rates.EventCounter = ""
     db.updateObjects([ef_rates])
 
@@ -74,6 +75,11 @@ def create_partition(**part_args):
 
     daq_counters = create_counters(db)
     partition.IS_InformationSource = daq_counters
-
+    
+    pu_db = Project("PuDummy.data.xml")
+    trig_config = pu_db.getObject("TriggerConfiguration", "TrigConf-1")
+    partition.TriggerConfiguration = trig_config
+    
+    partition.Disabled.append(db.getObject("Segment", "ROS"))
     db.updateObjects([partition])
     return partition
