@@ -1,6 +1,5 @@
 #!/usr/bin/env tdaq_python
 
-import pm.farm
 from farm_utils import *
 from pprint import pprint
 import sys
