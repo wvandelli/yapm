@@ -202,6 +202,7 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
     info_handler = (gatherer_dal.
                     MIGInformationHandler("DefaultGathererInformationHandler"))
     gatherer_algorithm = gatherer_dal.MIGAlgorithm("DefaultGathererAlgorithm")
+    db.updateObjects([info_handler, gatherer_algorithm])
 
     gatherer_config_top = (gatherer_dal.
                            MIGConfiguration("GathererConfiguration-Top"))
@@ -210,6 +211,7 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
                                     "Histogramming")
     gatherer_config_top.SourceServers = [top_histo_server]
     gatherer_config_top.DestinationServers = [top_histo_server]
+    db.updateObjects([gatherer_config_top])
 
     top_gatherer_app = gatherer_dal.MIGApplication("Gatherer-Top")
     top_gatherer_app.Parameters = "-n Gatherer-Top"
@@ -217,6 +219,7 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
     gatherer_bin = db.getObject("Binary", "MonInfoGatherer")
     top_gatherer_app.Program = gatherer_bin
     top_gatherer_app.Configurations = [gatherer_config_top]
+    db.updateObjects([top_gatherer_app])
     
     hltsv_segment = dal.Segment("HLT")
     defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
