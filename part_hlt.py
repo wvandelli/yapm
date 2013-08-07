@@ -26,8 +26,6 @@ def create_gatherer_application(db, segment_name, segment_oh_server):
     db.updateObjects([gatherer_config_segment])
 
     segment_gatherer_app = gatherer_dal.MIGApplication(app_name)
-    segment_gatherer_app.Parameters = "-n " + app_name
-    segment_gatherer_app.RestartParameters = "-n " + app_name
     gatherer_bin = db.getObject("Binary", "MonInfoGatherer")
     segment_gatherer_app.Program = gatherer_bin
     segment_gatherer_app.Configurations = [gatherer_config_segment]
@@ -52,7 +50,6 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
     aggregator_app.Parameters = "-T DCM"
     aggregator_app.RestartParameters = "-T DCM"
     aggregator_app.InitTimeout = 0
-    aggregator_app.StartAt = "SOR"
     aggregator_app.RestartableDuringRun = True
     env_tdaq_python_home = db.getObject('Variable', 'TDAQ_PYTHON_HOME')
     env_pythonpath = db.getObject('Variable', 'PYTHONPATH')
@@ -107,7 +104,7 @@ def create_dcm_segment(**dcm_args):
     dcm_segment.IsControlledBy = defrc_controller
 
     aggregator_app = (create_aggregator_app(db, "aggregator.py",
-                                    dcm_args['default_host'], name))
+                                            dcm_args['default_host'], name))
     dcm_segment.Applications.append(aggregator_app)
 
     #infrastructure applications
