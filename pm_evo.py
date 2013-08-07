@@ -1,12 +1,11 @@
 #!/usr/bin/env tdaq_python
 
-from farm_utils import *
-from pprint import pprint
-import sys
+from pm.project import Project
 from pm_test_max import *
 import argparse
 from part_hlt import create_dcm_segment
 from pm_partition import create_partition
+from pprint import pprint
 
 def create_config_db(args):
     exec("from " + args.farm_file + " import farm_dict")
@@ -15,11 +14,13 @@ def create_config_db(args):
     data_networks = args.data_networks
     multicast_address = args.multicast_address
 
-    full_includes = includes + args.extra_includes
+    full_includes = INCLUDES + args.extra_includes
     db = Project(farm_dict['name'] + ".data.xml", full_includes)
     if args.local:
         lh = farm_dict['default_host']
-        for iface in lh.Interfaces: db.updateObjects([iface])
+        for iface in lh.Interfaces:
+            db.updateObjects([iface])
+            
         db.updateObjects([lh])
 
     
@@ -65,7 +66,8 @@ def main():
                         required=False, type=str, nargs='+', default=[])
     parser.add_argument("-m", "--multicast-address", help='Multicast address',
                         required=False, type=str, default="")
-    parser.add_argument("-I", "--extra-includes",nargs='+', help='Add include files',
+    parser.add_argument("-I", "--extra-includes", nargs='+',
+                        help='Add include files',
                         required=False, type=str, default=[])
     parser.add_argument("-r", "--repository-root", help='Repository root',
                         required=False, type=str, default="")

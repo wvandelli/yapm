@@ -1,13 +1,15 @@
-#!/usr/bin/env tdaq_python
+"""
+This module creates dal representation objects for HLTSV segment,
+ROS segment and directly related objects. Also some other general
+objects that are needed by other segments/objects generated
+in other modules.
+"""
 
-from pm.project import Project
 from pm.dal import dal, DFdal
 from config.dal import module as dal_module
-import sys
-from farm_utils import *
 import os
 
-includes = ['daq/segments/setup.data.xml',
+INCLUDES = ['daq/segments/setup.data.xml',
             'daq/schema/hltsv.schema.xml',
             'daq/sw/repository.data.xml',
             'dcm/schema/dcm_is.schema.xml',
@@ -16,24 +18,18 @@ includes = ['daq/segments/setup.data.xml',
             'daq/schema/dcm.schema.xml',
             'daq/sw/tags.data.xml',
             'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml']
-tags = [
-       'x86_64-slc6-gcc47-opt',
-       'x86_64-slc6-gcc47-dbg'
-       'x86_64-slc5-gcc47-opt',
-       'x86_64-slc5-gcc47-dbg',
-      ]
 
 def create_config_rules(db):
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     
     default_is_publishing = (is_dal.ISPublishingParameters
-                             ("DefaulISpublishingParameters"))
+                    ("DefaulISpublishingParameters"))
     default_is_publishing.PublishInterval = 5
     default_is_publishing.ISServer = "${TDAQ_IS_SERVER=DF}"
     db.updateObjects([default_is_publishing])
     
     default_oh_publishing = (is_dal.OHPublishingParameters
-                             ("DefaulOHpublishingParameters"))
+                    ("DefaulOHpublishingParameters"))
     default_oh_publishing.PublishInterval = 5
     default_oh_publishing.OHServer = "${TDAQ_OH_SERVER=Histogramming}"
     default_oh_publishing.ROOTProvider = "${TDAQ_APPLICATION_NAME}"
@@ -48,7 +44,7 @@ def create_config_rules(db):
     db.updateObjects([oh_config_rule])
     
     def_config_rules = (is_dal.ConfigurationRuleBundle
-                        ("DefaultConfigurationRuleBundle"))
+                ("DefaultConfigurationRuleBundle"))
     def_config_rules.Rules.append(oh_config_rule)
     def_config_rules.Rules.append(is_config_rule)
     db.updateObjects([def_config_rules])
@@ -83,9 +79,9 @@ def create_template_applications(db, dcm_only, hltpu_only):
 def create_hltsv_app(db, hltsv_host):
     hltsv_dal = dal_module("hltsv_dal", 'daq/schema/hltsv.schema.xml')
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
-
+    
     def_config_rules = db.getObject("ConfigurationRuleBundle",
-                                    "DefaultConfigurationRuleBundle")
+                         "DefaultConfigurationRuleBundle")
     
     roib_plugin = hltsv_dal.RoIBPluginInternal("plugin_internal")
     roib_plugin.Libraries.append("libsvl1internal")
@@ -104,7 +100,7 @@ def create_hltsv_app(db, hltsv_host):
 
 def create_hltpu_application(db):
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
-    
+
     hlt_data_source = hltpu_dal.HLTDataSourceImpl("hltDataSource")
     hlt_data_source.library = "DFDummyBackend"
     db.updateObjects([hlt_data_source])
@@ -125,7 +121,7 @@ def create_hltpu_application(db):
     
 def create_dcm_application(db):
     config_rules = (db.getObject("ConfigurationRuleBundle",
-                            "DefaultConfigurationRuleBundle"))
+                                 "DefaultConfigurationRuleBundle"))
     dcm_main = db.getObject("Binary", "dcm_main")
     
     dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
@@ -233,14 +229,14 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
     for index, sfo_host in enumerate(sfos):
         sfo_application = create_sfo_application(db, str(index), sfo_host)
         sfo_apps.append(sfo_application)
-
+        
     hltsv_resources = [hltsv_app, top_gatherer_app] + sfo_apps
     hltsv_segment.Resources = hltsv_resources
     
     hltsv_segment.DefaultHost = default_host
 
     aggregator_app = create_aggregator_app(db, "top_aggregator.py",
-                                           default_host)
+                             default_host)
     hltsv_segment.Applications.append(aggregator_app)
 
     db.updateObjects([hltsv_segment])
@@ -252,7 +248,7 @@ def add_dcm_segments(db, dcm_segments):
     #add all the dcm segments to the hlt segment
     for d_segment in dcm_segments:
         hltsv_segment.Segments.append(d_segment)
-        
+       
     db.updateObjects([hltsv_segment])
     
 def create_sfo_application(db, number, host):
@@ -282,7 +278,7 @@ def create_sfo_application(db, number, host):
 
     dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     dc_is_resource = dcm_dal.DC_ISResourceUpdate("DCAppConf-" + number +
-                                                 "-ISResourceUpdate-SFO")
+                                "-ISResourceUpdate-SFO")
     dc_is_resource.name = "SFO"
     dc_is_resource.delay = 10
     dc_is_resource.activeOnNodes.append("SFO")
@@ -300,20 +296,20 @@ def create_sfo_application(db, number, host):
     return sfo_app
 
 def create_ros_segment(db):
-     ros_segment = dal.Segment("ROS")
+    ros_segment = dal.Segment("ROS")
 
-     for ros_unit in db.getObject("ROS"):
-          ros_segment.Resources.append(ros_unit)
+    for ros_unit in db.getObject("ROS"):
+        ros_segment.Resources.append(ros_unit)
 
-     defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
-     ros_segment.IsControlledBy = defrc_controller
-     db.updateObjects([ros_segment])
-     return ros_segment
-
-
-"""
-def create_ros_segment(db):
-    #get ros segment from included schema file
-    ros_segment = db.getObject("Segment", "ROS-TDQ-emulated-dc")
+    defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
+    ros_segment.IsControlledBy = defrc_controller
+    db.updateObjects([ros_segment])
     return ros_segment
-"""
+
+
+
+#def create_ros_segment(db):
+    #get ros segment from included schema file
+#    ros_segment = db.getObject("Segment", "ROS-TDQ-emulated-dc")
+#    return ros_segment
+#
