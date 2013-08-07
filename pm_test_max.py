@@ -26,12 +26,14 @@ tags = [
 def create_config_rules(db):
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     
-    default_is_publishing = is_dal.ISPublishingParameters("DefaulISpublishingParameters")
+    default_is_publishing = (is_dal.ISPublishingParameters
+                             ("DefaulISpublishingParameters"))
     default_is_publishing.PublishInterval = 5
     default_is_publishing.ISServer = "${TDAQ_IS_SERVER=DF}"
     db.updateObjects([default_is_publishing])
     
-    default_oh_publishing = is_dal.OHPublishingParameters("DefaulOHpublishingParameters")
+    default_oh_publishing = (is_dal.OHPublishingParameters
+                             ("DefaulOHpublishingParameters"))
     default_oh_publishing.PublishInterval = 5
     default_oh_publishing.OHServer = "${TDAQ_OH_SERVER=Histogramming}"
     default_oh_publishing.ROOTProvider = "${TDAQ_APPLICATION_NAME}"
@@ -45,24 +47,28 @@ def create_config_rules(db):
     oh_config_rule.Parameters = default_oh_publishing
     db.updateObjects([oh_config_rule])
     
-    def_config_rules = is_dal.ConfigurationRuleBundle("DefaultConfigurationRuleBundle")
+    def_config_rules = (is_dal.ConfigurationRuleBundle
+                        ("DefaultConfigurationRuleBundle"))
     def_config_rules.Rules.append(oh_config_rule)
     def_config_rules.Rules.append(is_config_rule)
     db.updateObjects([def_config_rules])
 
 def create_hltpu_templates(db):
     """
-    Here create the template applications of the DCM segments that only need to be created once
+    Here create the template applications of the DCM segments
+    that only need to be created once
     """
     #first create the hltmppu template
+    app_parameters = "-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so"
     hltmppu_template = dal.TemplateApplication("HLTMPPU-Template")
-    hltmppu_template.Parameters = "-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so"
-    hltmppu_template.RestartParameters = "-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so"
+    hltmppu_template.Parameters = app_parameters
+    hltmppu_template.RestartParameters = app_parameters
     hltmppu_template.InitTimeout = 0
     hltmppu_main = db.getObject("Binary", "HLTMPPU_main")
     hltmppu_template.Program = hltmppu_main
     hltmppu_template.RestartableDuringRun = True
     db.updateObjects([hltmppu_template])
+    
     create_hltpu_application(db)
     
 def create_template_applications(db, dcm_only, hltpu_only):
@@ -78,7 +84,8 @@ def create_hltsv_app(db, hltsv_host):
     hltsv_dal = dal_module("hltsv_dal", 'daq/schema/hltsv.schema.xml')
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
 
-    def_config_rules = db.getObject("ConfigurationRuleBundle", "DefaultConfigurationRuleBundle")
+    def_config_rules = db.getObject("ConfigurationRuleBundle",
+                                    "DefaultConfigurationRuleBundle")
     
     roib_plugin = hltsv_dal.RoIBPluginInternal("plugin_internal")
     roib_plugin.Libraries.append("libsvl1internal")
@@ -163,31 +170,7 @@ def create_dcm_application(db):
     db.updateObjects([dcm_app])
     return dcm_app
 
-def create_infrastructure_app(db, name, env_var, host):
-    is_server = dal.InfrastructureApplication(name)
-    is_server_binary = db.getObject("Binary", "is_server")
-    is_server.Program = is_server_binary
-    is_server.Parameters = "-s -p ${TDAQ_PARTITION} -n" + name
-    is_server.RestartParameters = "-s -p ${TDAQ_PARTITION} -n" + name
-    is_server.SegmentProcEnvVarName = env_var
-    is_server.IfDies = "Restart"
-    is_server.IfFailed = "Restart"
-    is_server.RestartableDuringRun = True
-    is_server.RunsOn = host
-    return is_server
-
-def create_gatherer_application(db, segment_name):
-    gatherer_app = DFdal.GATHERERApplication("Gatherer-" + segment_name)
-    gatherer_app.Parameters = "-n Gatherer-" + segment_name
-    gatherer_app.RestartParameters = "-n Gatherer-" + segment_name
-    gatherer_app.Program = db.getObject("Binary", "Gatherer")
-    gatherer_config = db.getObject("GATHERERConfiguration", "GathererConfiguration-Segment")
-    gatherer_app.GATHERERConfiguration.append(gatherer_config)
-    db.updateObjects([gatherer_app])
-
-    return gatherer_app
-
-def create_aggregator_app(db, script_name, default_host, segment_name):
+def create_aggregator_app(db, script_name, default_host, segment_name=""):
     dal_script_name = os.path.splitext(script_name)[0]
     aggregator_script = dal.Script(dal_script_name)
     aggregator_script.BinaryName = script_name
@@ -195,7 +178,8 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
     aggregator_script.BelongsTo = repository
     db.updateObjects([aggregator_script])
     if not segment_name == "":
-        aggregator_app = dal.Application("DCM-" + dal_script_name + "-" + segment_name)
+        aggregator_app = dal.Application("DCM-" + dal_script_name + "-" +
+                                         segment_name)
     else:
         aggregator_app = dal.Application("DCM-" + dal_script_name)
     aggregator_app.Program = aggregator_script
@@ -211,7 +195,7 @@ def create_aggregator_app(db, script_name, default_host, segment_name):
     db.updateObjects([aggregator_app])
     return aggregator_app
 
-def create_hlt_segment(db, default_host, hltsv_host, dcm_segments):
+def create_hlt_segment(db, default_host, hltsv_host, sfos):
     gatherer_dal = dal_module("gatherer_dal",
                               'dcm/schema/MonInfoGatherer.schema.xml')
      
@@ -219,89 +203,38 @@ def create_hlt_segment(db, default_host, hltsv_host, dcm_segments):
                     MIGInformationHandler("DefaultGathererInformationHandler"))
     gatherer_algorithm = gatherer_dal.MIGAlgorithm("DefaultGathererAlgorithm")
 
-    gatherer_config_top = gatherer_dal.MIGConfiguration("GathererConfiguration-Top")
+    gatherer_config_top = (gatherer_dal.
+                           MIGConfiguration("GathererConfiguration-Top")
     gatherer_config_top.ProviderRegExp = "Histogramming-.*"
+    top_histo_server = db.getObject("InfrastructureApplication",
+                                    "Histogramming")
+    gatherer_config_top.sources = [top_histo_server]
+    gatherer_config_top.destination_servers = [top_histo_server]
 
-
-    
-
-
-    
-    gatherer_storage_segment = DFdal.HistogramStorage("GathererStorage-Segment")
-    gatherer_storage_segment.ISServerName = "${TDAQ_OH_SERVER}"
-    db.updateObjects([gatherer_storage_segment])
-
-    gatherer_storage_top = DFdal.HistogramStorage("GathererStorage-Top")
-    gatherer_storage_top.ISServerName = "Histogramming"
-    db.updateObjects([gatherer_storage_top])
-
-    gatherer_receiver_segment = DFdal.HistogramReceiverConfig("GathererReceiver-Segment")
-    gatherer_receiver_segment.Storage.append(gatherer_storage_segment)
-    db.updateObjects([gatherer_receiver_segment])
-
-    gatherer_provider_segment = DFdal.HistogramProviderConfig("GathererProvider-Segment")
-    gatherer_provider_segment.Storage.append(gatherer_storage_top)
-    gatherer_provider_segment.PublishProviderName = "${TDAQ_OH_SERVER}"
-    gatherer_provider_segment.UseHistory = False
-    gatherer_provider_segment.UpdateFrequency = 30
-    gatherer_provider_segment.SummingMode = "Merge"
-    gatherer_provider_segment.ResultContent = "Sum"
-    db.updateObjects([gatherer_provider_segment])
-
-    gatherer_receiver_top = DFdal.HistogramReceiverConfig("GathererReceiver-Top")
-    gatherer_receiver_top.Storage.append(gatherer_storage_top)
-    gatherer_receiver_top.Providers = "Histogramming-.*"
-    db.updateObjects([gatherer_receiver_top])
-
-    gatherer_provider_top = DFdal.HistogramProviderConfig("GathererProvider-Top")
-    gatherer_provider_top.Storage.append(gatherer_storage_top)
-    gatherer_provider_top.PublishProviderName = "Histogramming"
-    gatherer_provider_top.UseHistory = False
-    gatherer_provider_top.UpdateFrequency = 30
-    gatherer_provider_top.SummingMode = "Merge"
-    gatherer_provider_top.ResultContent = "Sum"
-    db.updateObjects([gatherer_provider_top])
-
-    gatherer_config_segment = DFdal.GATHERERConfiguration("GathererConfiguration-Segment")
-    gatherer_config_segment.Input = gatherer_receiver_segment
-    gatherer_config_segment.Output = gatherer_provider_segment
-    db.updateObjects([gatherer_config_segment])
-
-    gatherer_config_top = DFdal.GATHERERConfiguration("GathererConfiguration-Top")
-    gatherer_config_top.Input = gatherer_receiver_top
-    gatherer_config_top.Output = gatherer_provider_top
-    db.updateObjects([gatherer_config_top])
-
-    gatherer_app_top = DFdal.GATHERERApplication("Gatherer-Top")
-    gatherer_app_top.Parameters = "-n Gatherer-Top"
-    gatherer_app_top.RestartParameters = "-n Gatherer-Top"
-    gatherer_app_top.Program = db.getObject("Binary", "Gatherer")
-    gatherer_app_top.GATHERERConfiguration.append(gatherer_config_top)
-    db.updateObjects([gatherer_app_top])
+    top_gatherer_app = gatherer_dal.MIGApplication("Gatherer-Top")
+    top_gatherer_app.Parameters = "-n Gatherer-Top"
+    top_gatherer_app.RestartParameters = "-n Gatherer-Top"
+    gatherer_bin = db.getObject("Binary", "MonInfoGatherer")
+    top_gatherer_app.Program = gatherer_bin
+    top_gatherer_app.Configurations = [gatherer_config_top]
     
     hltsv_segment = dal.Segment("HLT")
     defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
     hltsv_segment.IsControlledBy = defrc_controller
     hltsv_app = create_hltsv_app(db, hltsv_host)
 
-    
-    sfo_app_1 = create_sfo_application(db, "1", hltsv_host.id)
-    sfo_app_2 = create_sfo_application(db, "2", hltsv_host.id)
-    sfo_app_3 = create_sfo_application(db, "3", hltsv_host.id)
-    sfo_app_4 = create_sfo_application(db, "4", hltsv_host.id)
-    
-    hltsv_segment.Resources.append(hltsv_app)
-    """
-    hltsv_segment.Resources.append(sfo_app_1)
-    hltsv_segment.Resources.append(sfo_app_2)
-    hltsv_segment.Resources.append(sfo_app_3)
-    hltsv_segment.Resources.append(sfo_app_4)
-    """
+    sfo_apps = []
+    for index, sfo_host in enumerate(sfos):
+        sfo_application = create_sfo_application(db, str(index), sfo_host)
+        sfo_apps.append(sfo_application)
 
-    hltsv_segment.Resources.append(gatherer_app_top)
+    hltsv_resources = [hltsv_app, gatherer_app_top] + sfo_apps
+    hltsv_segment.Resources = hltsv_resources
+    
     hltsv_segment.DefaultHost = default_host
 
-    aggregator_app = create_aggregator_app(db, "top_aggregator.py", default_host, "")
+    aggregator_app = create_aggregator_app(db, "top_aggregator.py",
+                                           default_host)
     hltsv_segment.Applications.append(aggregator_app)
 
     db.updateObjects([hltsv_segment])
@@ -342,7 +275,8 @@ def create_sfo_application(db, number, host):
     sfo_app.SFOConfiguration = sfo_config
 
     dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
-    dc_is_resource = dcm_dal.DC_ISResourceUpdate("DCAppConf-"+number + "-ISResourceUpdate-SFO")
+    dc_is_resource = dcm_dal.DC_ISResourceUpdate("DCAppConf-" + number +
+                                                 "-ISResourceUpdate-SFO")
     dc_is_resource.name = "SFO"
     dc_is_resource.delay = 10
     dc_is_resource.activeOnNodes.append("SFO")
@@ -359,32 +293,6 @@ def create_sfo_application(db, number, host):
     db.updateObjects([sfo_app])
     return sfo_app
 
-def create_counters(db):
-    l1_rates = dal.IS_EventsAndRates("L1_counters")
-    l1_rates.EventCounter = "DF.HLTSV.Events.LVL1Events"
-    l1_rates.Rate = "DF.HLTSV.Events.Rate"
-    db.updateObjects([l1_rates])
-    l2_rates = dal.IS_EventsAndRates("L2_counters")
-    l2_rates.EventCounter = "DF.DCM_summary_DF_top_sum.ProxL1Events" 
-    l2_rates.Rate = "DF.DCM_summary_DF_top_sum.L1Rate"
-    db.updateObjects([l2_rates])
-    eb_rates = dal.IS_EventsAndRates("DF.DCM_summary_DF_top_sum.EB_counters")
-    eb_rates.Rate = "DF.DCM_summary_DF_top_sum.EbRate"
-    eb_rates.EventCounter = "DF.DCM_summary_DF_top_sum.EbEvents"
-    db.updateObjects([eb_rates])
-    ef_rates = dal.IS_EventsAndRates("DF.DCM_summary_DF_top_sum.EF_counters")
-    ef_rates.Rate = "DF.DCM_summary_DF_top_sum.OutRate"
-    ef_rates.EventCounter = ""
-    db.updateObjects([ef_rates])
-    
-    daq_counters = dal.IS_InformationSources("DAQ_Counters")
-    daq_counters.LVL1 = l1_rates
-    daq_counters.LVL2 = l2_rates
-    daq_counters.EB = eb_rates
-    daq_counters.EF = ef_rates
-    db.updateObjects([daq_counters])
-    return daq_counters
-
 def create_ros_segment(db):
      ros_segment = dal.Segment("ROS")
 
@@ -394,7 +302,9 @@ def create_ros_segment(db):
      defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
      ros_segment.IsControlledBy = defrc_controller
      db.updateObjects([ros_segment])
-     return ros_segment    
+     return ros_segment
+
+
 """
 def create_ros_segment(db):
     #get ros segment from included schema file
