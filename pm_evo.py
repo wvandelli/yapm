@@ -9,7 +9,7 @@ from pprint import pprint
 
 def create_config_db(args):
     exec("from " + args.farm_file + " import farm_dict")
-    
+    farm_dict['name'] = args.partition_name
     repository_root = args.repository_root
     data_networks = args.data_networks
     multicast_address = args.multicast_address
@@ -77,6 +77,8 @@ def main():
                         action="store_true")
     parser.add_argument("--local", required=False, default=False,
                         action="store_true")
+    parser.add_argument("-p", "--partition-name", required=False,
+                        default="az_test")
     args = parser.parse_args()
     pprint(args)
     create_config_db(args)

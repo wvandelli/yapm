@@ -27,7 +27,6 @@ def partition(name, default_host, dcms, hltsv, sfos):
     the partition making script
     """
     farm_dict = {}
-    farm_dict['name'] = name
     farm_dict['default_host'] = default_host
     farm_dict['dcms'] = dcms
     farm_dict['hltsv'] = hltsv
