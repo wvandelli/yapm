@@ -4,7 +4,7 @@ import pm.farm
 from farm_utils import *
 from pprint import pprint
 import sys
-from pm_test import *
+from pm_test_max import *
 import argparse
 from part_hlt import create_dcm_segment
 from pm_partition import create_partition
@@ -30,7 +30,7 @@ def create_config_db(args):
     create_config_rules(db)
     create_template_applications(db, args.dcm_only, args.hltpu_only)
     hlt_segment = (create_hlt_segment(db, farm_dict['default_host'],
-                                      farm_dict['hltsv'], hlt_segments))
+                                      farm_dict['hltsv'], farm_dict['sfos']))
     part_segments.append(hlt_segment)
     ros_segment = create_ros_segment(db)
     part_segments.append(ros_segment)
