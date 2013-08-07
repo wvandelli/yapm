@@ -269,7 +269,7 @@ def create_sfo_application(db, number, host):
     sfo_app.IfError = "Restart"
     sfo_app.RestartableDuringRun = True
     sfo_app.IfDies = "Restart"
-    sfo_app.RunsOn = db.getObject("Computer", host)
+    sfo_app.RunsOn = host
     sfo_binary = db.getObject("Binary", "SFO_main")
     sfo_app.Program = sfo_binary
     sfo_app.SFOConfiguration = sfo_config
