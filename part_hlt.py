@@ -2,7 +2,7 @@
 This module creates a dal representation object for an HLT segment
 and all directly related objects(gatherer, IS servers, aggregators)
 """
-from config.dal import dal, DFdal
+from pm.dal import dal, DFdal
 import os
 
 def create_gatherer_application(db, segment_name, segment_oh_server):
