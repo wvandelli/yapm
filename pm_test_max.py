@@ -198,11 +198,12 @@ def create_aggregator_app(db, script_name, default_host, segment_name=""):
 def create_hlt_segment(db, default_host, hltsv_host, sfos):
     gatherer_dal = dal_module("gatherer_dal",
                               'daq/schema/MonInfoGatherer.schema.xml')
-     
+    gatherer_algorithm = gatherer_dal.MIGAlgorithm("DefaultGathererAlgorithm")
+    db.updateObjects([gatherer_algorithm])
     info_handler = (gatherer_dal.
                     MIGInformationHandler("DefaultGathererInformationHandler"))
-    gatherer_algorithm = gatherer_dal.MIGAlgorithm("DefaultGathererAlgorithm")
-    db.updateObjects([info_handler, gatherer_algorithm])
+    info_handler.Algorithm = gatherer_algorithm
+    db.updateObjects([info_handler])
 
     gatherer_config_top = (gatherer_dal.
                            MIGConfiguration("GathererConfiguration-Top"))
@@ -211,6 +212,8 @@ def create_hlt_segment(db, default_host, hltsv_host, sfos):
                                     "Histogramming")
     gatherer_config_top.SourceServers = [top_histo_server]
     gatherer_config_top.DestinationServers = [top_histo_server]
+    gatherer_config_top.InformationHandler = info_handler
+    gatherer_config_top.Algorithm = gatherer_algorithm
     db.updateObjects([gatherer_config_top])
 
     top_gatherer_app = gatherer_dal.MIGApplication("Gatherer-Top")
