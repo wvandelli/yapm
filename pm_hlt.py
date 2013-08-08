@@ -5,7 +5,7 @@ and all directly related objects(gatherer, IS servers)
 
 from pm.dal import dal
 from config.dal import module as dal_module
-from pm.common import create_aggregator_app
+from pm_common import create_aggregator_app
 
 def create_gatherer_application(db, segment_name, segment_oh_server):
     app_name = "Gatherer-" + segment_name
