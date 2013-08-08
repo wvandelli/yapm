@@ -20,9 +20,9 @@ dcm_segments.append(dcm_segment("HLT-Segment-02", service_node, worker_nodes,
                                 service_node, service_node))
 
 
+sfos = [local_host]
 hltsv_host = local_host
 controller_host = local_host
 
-partition_name = "azar_test"
-farm_dict = partition(partition_name, controller_host, dcm_segments, hltsv_host)
+farm_dict = partition(controller_host, dcm_segments, hltsv_host, sfos)
 pprint(farm_dict)
