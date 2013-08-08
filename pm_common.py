@@ -12,6 +12,16 @@ INCLUDES = ['daq/segments/setup.data.xml',
             'daq/sw/tags.data.xml',
             'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml']
 
+def create_default_gatherer_options(db):
+    gatherer_dal = dal_module("gatherer_dal",
+                              'daq/schema/MonInfoGatherer.schema.xml')
+    gatherer_algorithm = gatherer_dal.MIGAlgorithm("DefaultGathererAlgorithm")
+    db.updateObjects([gatherer_algorithm])
+    info_handler = (gatherer_dal.
+                    MIGInformationHandler("DefaultGathererInformationHandler"))
+    info_handler.Algorithm = gatherer_algorithm
+    db.updateObjects([info_handler])
+
 def create_config_rules(db):
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     
