@@ -1,14 +1,20 @@
 #!/usr/bin/env tdaq_python
 
 from pm.project import Project
-from pm_test_max import *
 import argparse
-from part_hlt import create_dcm_segment
-from pm_partition import create_partition
 from pprint import pprint
+from pm_ros import create_ros_segment
+from pm_common import (create_config_rules,
+                       create_template_applications, INCLUDES)
+from pm_hltsv import create_hlt_segment, add_dcm_segments
+from pm_hlt import create_dcm_segment
+from pm_partition import create_partition
 
 def create_config_db(args):
+    hlt_segments = []
+    part_segments = []
     exec("from " + args.farm_file + " import farm_dict")
+    
     farm_dict['name'] = args.partition_name
     repository_root = args.repository_root
     data_networks = args.data_networks
@@ -22,27 +28,24 @@ def create_config_db(args):
             db.updateObjects([iface])
             
         db.updateObjects([lh])
-
-    
-    hlt_segments = []
-    part_segments = []
     
     create_config_rules(db)
     create_template_applications(db, args.dcm_only, args.hltpu_only)
-    hlt_segment = (create_hlt_segment(db, farm_dict['default_host'],
-                                      farm_dict['hltsv'], farm_dict['sfos']))
-    part_segments.append(hlt_segment)
-    ros_segment = create_ros_segment(db)
-    part_segments.append(ros_segment)
-    
+
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
         dcm['dcm_only'] = args.dcm_only
         dcm['db'] = db
         dcm_segment = create_dcm_segment(**dcm)
         hlt_segments.append(dcm_segment)
-    
+
+    hlt_segment = (create_hlt_segment(db, farm_dict['default_host'],
+                                      farm_dict['hltsv'], farm_dict['sfos']))
     add_dcm_segments(db, hlt_segments)
+    part_segments.append(hlt_segment)
+    
+    ros_segment = create_ros_segment(db)
+    part_segments.append(ros_segment)
     
     part_params = {
                    'db'       : db, 
