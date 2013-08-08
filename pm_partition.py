@@ -22,11 +22,13 @@ def create_counters(db):
     l2_rates.EventCounter = "DF.DCM-top_aggregator.DCM.top.sum.ProxL1Events"
     l2_rates.Rate = "DF.DCM_summary_DF_top_sum.L1Rate"
     db.updateObjects([l2_rates])
-    eb_rates = dal.IS_EventsAndRates("DF.DCM-top_aggregator.DCM.top.sum.EB_counters")
+    eb_rates = (dal.IS_EventsAndRates
+                ("DF.DCM-top_aggregator.DCM.top.sum.EB_counters"))
     eb_rates.Rate = "DF.DCM-top_aggregator.DCM.top.sum.EbRate"
     eb_rates.EventCounter = "DF.DCM-top_aggregator.DCM.top.sum.EbEvents"
     db.updateObjects([eb_rates])
-    ef_rates = dal.IS_EventsAndRates("DF.DCM-top_aggregator.DCM.top.sum.EF_counters")
+    ef_rates = (dal.IS_EventsAndRates
+                ("DF.DCM-top_aggregator.DCM.top.sum.EF_counters"))
     ef_rates.Rate = "DF.DCM-top_aggregator.DCM.top.sum.OutRate"
     ef_rates.EventCounter = ""
     db.updateObjects([ef_rates])
