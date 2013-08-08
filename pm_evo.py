@@ -5,7 +5,8 @@ import argparse
 from pprint import pprint
 from pm_ros import create_ros_segment
 from pm_common import (create_config_rules,
-                       create_template_applications, INCLUDES)
+                       create_template_applications, INCLUDES,
+                       create_default_gatherer_options)
 from pm_hltsv import create_hlt_segment, add_dcm_segments
 from pm_hlt import create_dcm_segment
 from pm_partition import create_partition
@@ -30,8 +31,9 @@ def create_config_db(args):
         db.updateObjects([lh])
     
     create_config_rules(db)
+    create_default_gatherer_options(db)
     create_template_applications(db, args.dcm_only, args.hltpu_only)
-
+    
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
         dcm['dcm_only'] = args.dcm_only
