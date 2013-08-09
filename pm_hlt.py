@@ -85,18 +85,27 @@ def create_dcm_segment(**dcm_args):
     dcm_segment.Applications.append(aggregator_app)
 
     #infrastructure applications
+    """
     is_server = (create_is_server(db, "DF-" + name + "-iss", "TDAQ_IS_SERVER",
                             dcm_args['is_resource']))
     oh_server = (create_is_server(db, "Histogramming-" + name + "-iss",
                                   "TDAQ_OH_SERVER",
                                   dcm_args['is_histogram']))
     db.updateObjects([is_server, oh_server])
-    rdb = db.getObject("InfrastructureTemplateApplication", "DefNestedRDB")
+    """
+    rdb = db.getObject("InfrastructureTemplateApplication", "DefRDB")
+    is_server = db.getObject("InfrastructureTemplateApplication", "DF_IS")
+    oh_server = db.getObject("InfrastructureTemplateApplication",
+                             "DF_Histogramming")
+    rdb = db.getObject("InfrastructureTemplateApplication", "DefRDB")
     dcm_segment.Infrastructure = [is_server, oh_server, rdb]
 
     #Resources
+    """
     gatherer_app = create_gatherer_application(db, name, oh_server)
     dcm_segment.Resources.append(gatherer_app)
+    """
 
+    
     db.updateObjects([dcm_segment])
     return dcm_segment
