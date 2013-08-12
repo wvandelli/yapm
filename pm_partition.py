@@ -81,7 +81,7 @@ def create_partition(**part_args):
     pu_db = Project("PuDummy.data.xml")
     trig_config = pu_db.getObject("TriggerConfiguration", "TrigConf-1")
     partition.TriggerConfiguration = trig_config
-    
+
     partition.Disabled.append(db.getObject("Segment", "ROS"))
     db.updateObjects([partition])
     return partition

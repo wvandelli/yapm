@@ -82,8 +82,7 @@ def create_template_applications(db, dcm_only, hltpu_only):
 def create_hltpu_application(db):
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
 
-    hlt_data_source = hltpu_dal.HLTDataSourceImpl("hltDataSource")
-    hlt_data_source.library = "DFDummyBackend"
+    hlt_data_source = hltpu_dal.HLTDFDCMBackend("hltDataSource")
     db.updateObjects([hlt_data_source])
     
     hlt_mon_service = hltpu_dal.HLTInfoServiceImpl("MonSvcInfoService")
