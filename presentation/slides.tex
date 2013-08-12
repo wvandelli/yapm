@@ -5,10 +5,10 @@
 {Partition configuration maker}
 \author[Argyris Zardilis] % (optional, for multiple authors)
 {Argyris Zardilis \inst{}}
-\institute[Uni Cambridge \& CERN] % (optional)
+\institute[CERN] % (optional)
 {
   \inst{}%
-  University of Cambridge \& CERN
+  CERN
 }
 \date[DAQ/HLT meeting, 15/08/2013] % (optional)
 {DAQ/HLT meeting, 15 August 2013}
@@ -62,13 +62,18 @@
 
 \begin{frame}
  \frametitle{Solution schematically}
- Include a diagram of the modules
+ \includegraphics[height=8cm,width=12cm]{images/partition_maker_layers.png}
  
 \end{frame}
 
 \begin{frame}
+\frametitle{Partition generation flow}
+\includegraphics[height=5.5cm,width=12cm]{images/generation_flow.png} \\
+Bottom-up approach. Start from primitive segments(don't contain other segments) and then pass their handle to their container segments and so on.
+\end{frame}
+
+\begin{frame}
  \frametitle{Capabilities}
- \framesubtitle{and incapabilities}
  \begin{itemize}
    \item Create localhost or multihost partitions in testbed/P1
      \begin{itemize}
