@@ -1,0 +1,144 @@
+\documentclass{beamer}
+\usepackage{verbatim}
+\usetheme{Boadilla}
+\title% (optional, only for long titles)
+{Partition configuration maker}
+\author[Argyris Zardilis] % (optional, for multiple authors)
+{Argyris Zardilis \inst{}}
+\institute[Uni Cambridge \& CERN] % (optional)
+{
+  \inst{}%
+  University of Cambridge \& CERN
+}
+\date[DAQ/HLT meeting, 15/08/2013] % (optional)
+{DAQ/HLT meeting, 15 August 2013}
+
+
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+  \frametitle{Motivation}
+  \begin{itemize}
+    \item Large amount of information in a partition, hard to create its configuration manually \\
+      \textbf{Solution}: Use a tool that automates all or part of the process
+
+    \item Existing tool depends heavily on system design and schema. After new DF design can't do the
+      job anymore.
+
+    \item Last Technical Run: need to create partition of different flavours to test different components
+      of the system and their combinations.
+
+    \item Manual partition configuration generation laborious and time-consuming
+
+    \item Limited amount of time in a TR setting to perform all necessary tests
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Solution}
+  \begin{itemize}
+    \item Created a tool following the new system design that automates the process
+
+    \item Started as a temporary solution for TR2 but since grew to a more complete
+      and configurable command-line tool akin to the older one.
+
+    \item By no means as complete or comprehensive but covers basic use cases
+
+    \item Set of python scripts to create basic segments or complete partitions
+
+    \item Build on top of config and Python DAL package to get access to base classes defined in OKS schema and
+      OKS ConfigObject(for classes not in standard schema bound to Python DAL)
+
+    \item Also uses pm.project from the old package to get a convenient handle to the config db
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Solution schematically}
+ Include a diagram of the modules
+ 
+\end{frame}
+
+\begin{frame}
+ \frametitle{Capabilities}
+ \framesubtitle{and incapabilities}
+ \begin{itemize}
+   \item Create localhost or multihost partitions in testbed/P1
+     \begin{itemize}
+       \item farm description loaded from user provided python dictionary
+     \end{itemize}
+   \item Create standard partitions: only DCMs, only HLTPUs
+     \begin{itemize}
+       \item customisable through command line parameters
+     \end{itemize}
+
+   \item Create standalone, pluggable HLTSV segment
+     
+   \item Doesn't handle ROS segment generation yet
+
+   \item Also includes configuration for standard monitoring applications
+     
+   \item Other configurable parameters: extra includes, data networks, repository root
+
+ \end{itemize}
+ 
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example usage}
+  Create a DCM only partition with a provided python file 'farm\_gen' containing farm
+  description with partition name 'az\_test' and repository root my home directory:
+  \begin{itemize}
+    \item \texttt{tdaq\_python pm\_evo.py -p az\_test -f farm\_gen --dcm-only -r tbed/user/azardili/installed}
+
+  \end{itemize}
+
+    Create a DCM/HLTPU partition with a provided python file 'farm\_gen' containing farm
+  description with partition name 'az\_test' with PuDummy.data.xml as extra include:
+  \begin{itemize}
+    \item \texttt{tdaq\_python pm\_evo.py -p az\_test -f farm\_gen -I PuDummy.data.xml}
+
+  \end{itemize}
+  
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusions}
+  \framesubtitle{and Future Work}
+  \begin{itemize}
+    \item More crude version proved useful for some use-cases in TR2.
+
+    \item Short term plans: Use this more polished version more extensively
+      in next TR or for tests in testbed
+      \begin{itemize}
+        \item Bonus: can be used by anyone now and it doesn't require knowledge of the
+          code anymore!
+      \end{itemize}
+
+    \item Longer term plans: Build upon this based on usage experience and input from
+      more people so that it becomes a complete and mature tool
+      \begin{itemize}
+
+        \item Discover use-cases and extra requirements
+       \end{itemize}
+
+    \item Current version lives in a private git repo on my public afs
+      partition which you can clone:
+      \begin{itemize}
+        \item \texttt{/afs/cern.ch/user/a/azardili/public/partition\_maker}
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
