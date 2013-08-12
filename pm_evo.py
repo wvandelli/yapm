@@ -3,13 +3,11 @@
 from pm.project import Project
 import argparse
 from pprint import pprint
-from pm_ros import create_ros_segment
-from pm_common import (create_config_rules,
-                       create_template_applications, INCLUDES,
-                       create_default_gatherer_options)
-from pm_hltsv import create_hlt_segment, add_dcm_segments
-from pm_hlt import create_dcm_segment
-from pm_partition import create_partition
+import pm_ros
+import pm_common
+import pm_hltsv 
+import pm_hlt 
+import pm_partition
 
 def create_config_db(args):
     hlt_segments = []
@@ -21,7 +19,7 @@ def create_config_db(args):
     data_networks = args.data_networks
     multicast_address = args.multicast_address
 
-    full_includes = INCLUDES + args.extra_includes
+    full_includes = pm_common.INCLUDES + args.extra_includes
     db = Project(farm_dict['name'] + ".data.xml", full_includes)
     if args.local:
         lh = farm_dict['default_host']
@@ -30,23 +28,24 @@ def create_config_db(args):
             
         db.updateObjects([lh])
     
-    create_config_rules(db)
-    create_default_gatherer_options(db)
-    create_template_applications(db, args.dcm_only, args.hltpu_only)
+    pm_common.create_config_rules(db)
+    pm_common.create_default_gatherer_options(db)
+    pm_common.create_template_applications(db, args.dcm_only, args.hltpu_only)
     
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
         dcm['dcm_only'] = args.dcm_only
         dcm['db'] = db
-        dcm_segment = create_dcm_segment(**dcm)
+        dcm_segment = pm_hlt.create_dcm_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hlt_segment = (create_hlt_segment(db, farm_dict['default_host'],
-                                      farm_dict['hltsv'], farm_dict['sfos']))
-    add_dcm_segments(db, hlt_segments)
+    hlt_segment = (pm_hltsv.create_hlt_segment(db, farm_dict['default_host'],
+                                               farm_dict['hltsv'],
+                                               farm_dict['sfos']))
+    pm_hltsv.add_dcm_segments(db, hlt_segments)
     part_segments.append(hlt_segment)
     
-    ros_segment = create_ros_segment(db)
+    ros_segment = pm_ros.create_ros_segment(db)
     part_segments.append(ros_segment)
     
     part_params = {
@@ -59,10 +58,10 @@ def create_config_db(args):
                    'default_host': farm_dict['default_host']
                    }
 
-    create_partition(**part_params)
+    pm_partition.create_partition(**part_params)
     
 
-def main():
+def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--farm-file",
                         help='Farm that contains dictionary',
@@ -84,11 +83,20 @@ def main():
                         action="store_true")
     parser.add_argument("-p", "--partition-name", required=False,
                         default="az_test")
+    return parser
+    
+def command_line_runner():
+    parser = get_parser()
     args = parser.parse_args()
     pprint(args)
-    create_config_db(args)
 
+    if args.hltpu_only and args.dcm_only:
+        print("Incompatible options hltpu-only and dcm-only.")
+        return
+    
+    create_config_db(args)
+    
 if __name__ == '__main__':
-    main()
+    command_line_runner()
     
     
