@@ -82,6 +82,6 @@ def create_partition(**part_args):
     trig_config = pu_config_db.getObject("TriggerConfiguration", "TrigConf-1")
     partition.TriggerConfiguration = trig_config
 
-    partition.Disabled.append(config_db.getObject("Segment", "ROS"))
+
     config_db.updateObjects([partition])
     return partition
