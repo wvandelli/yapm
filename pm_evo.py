@@ -14,8 +14,7 @@ def get_farm_dict(module_name):
     farm_gen = imp.find_module(module_name)
     farm_gen_mod = imp.load_module(module_name, farm_gen[0], farm_gen[1],
                                    farm_gen[2])
-    from farm_gen_mod import farm_dict
-    return farm_dict
+    return farm_gen_mod.farm_dict
 
 def create_config_db(args):
     hlt_segments = []
