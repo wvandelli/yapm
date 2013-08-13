@@ -85,7 +85,7 @@ def create_dcm_segment(**dcm_args):
     dcm_segment.Applications.append(aggregator_app)
 
     #infrastructure applications
-    rdb = db.getObject("InfrastructureTemplateApplication", "DefNestedRDB")
+    rdb = db.getObject("InfrastructureTemplateApplication", "DefRDB")
     is_server = db.getObject("InfrastructureTemplateApplication", "DF_IS")
     oh_server = db.getObject("InfrastructureTemplateApplication",
                              "DF_Histogramming")
