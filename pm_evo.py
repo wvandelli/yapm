@@ -10,7 +10,6 @@ sanity of the provided command line arguments and the farm dictionary
 
 from pm.project import Project
 import argparse
-from pprint import pprint
 import pm_ros
 import pm_common
 import pm_hltsv
@@ -114,7 +113,6 @@ def get_parser():
 def command_line_runner():
     parser = get_parser()
     args = parser.parse_args()
-    pprint(args)
 
     if args.hltpu_only and args.dcm_only:
         print("Incompatible options hltpu-only and dcm-only.")
