@@ -80,7 +80,7 @@ def create_dcm_segment(**dcm_args):
 
     defrc_controller = config_db.getObject("RunControlTemplateApplication",
                                            "DefRC")
-    dcm_segment.IsControlleconfig_dby = defrc_controller
+    dcm_segment.IsControlledBy = defrc_controller
 
     aggregator_app = (create_aggregator_app(config_db, "aggregator.py",
                                             dcm_args['default_host'], name))

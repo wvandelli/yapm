@@ -14,7 +14,7 @@ def create_ros_segment(config_db):
 
     defrc_controller = config_db.getObject("RunControlTemplateApplication",
                                            "DefRC")
-    ros_segment.IsControlleconfig_dby = defrc_controller
+    ros_segment.IsControlledBy = defrc_controller
     config_db.updateObjects([ros_segment])
     return ros_segment
 

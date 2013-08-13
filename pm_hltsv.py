@@ -109,7 +109,7 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
     hltsv_segment = dal.Segment("HLT")
     defrc_controller = config_db.getObject("RunControlTemplateApplication",
                                            "DefRC")
-    hltsv_segment.IsControlleconfig_dby = defrc_controller
+    hltsv_segment.IsControlledBy = defrc_controller
     hltsv_app = create_hltsv_app(config_db, hltsv_host)
 
     sfo_apps = []
