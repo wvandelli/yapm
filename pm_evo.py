@@ -8,48 +8,58 @@ import pm_common
 import pm_hltsv 
 import pm_hlt 
 import pm_partition
+import imp
+
+def get_farm_dict(module_name):
+    farm_gen = imp.find_module(module_name)
+    farm_gen_mod = imp.load_module(module_name, farm_gen[0], farm_gen[1],
+                                   farm_gen[2])
+    from farm_gen_mod import farm_dict
+    return farm_dict
 
 def create_config_db(args):
     hlt_segments = []
     part_segments = []
-    exec("from " + args.farm_file + " import farm_dict")
+    farm_dict = get_farm_dict(args.farm_file)
     
     farm_dict['name'] = args.partition_name
     repository_root = args.repository_root
     data_networks = args.data_networks
     multicast_address = args.multicast_address
 
-    full_includes = pm_common.INCLUDES + args.extra_includes
-    db = Project(farm_dict['name'] + ".data.xml", full_includes)
+    full_includes = pm_common.DEFAULT_INCLUDES + args.extra_includes
+    config_db = Project(farm_dict['name'] + ".data.xml", full_includes)
     if args.local:
-        lh = farm_dict['default_host']
+        local_host = farm_dict['default_host']
         for iface in lh.Interfaces:
-            db.updateObjects([iface])
+            config_db.updateObjects([iface])
             
-        db.updateObjects([lh])
+        config_db.updateObjects([local_host])
     
-    pm_common.create_config_rules(db)
-    pm_common.create_default_gatherer_options(db)
-    pm_common.create_template_applications(db, args.dcm_only, args.hltpu_only)
+    pm_common.create_config_rules(config_db)
+    pm_common.create_default_gatherer_options(config_db)
+    pm_common.create_template_applications(config_db, args.dcm_only,
+                                           args.hltpu_only)
     
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
         dcm['dcm_only'] = args.dcm_only
-        dcm['db'] = db
+        dcm['config_db'] = config_db
         dcm_segment = pm_hlt.create_dcm_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hlt_segment = (pm_hltsv.create_hlt_segment(db, farm_dict['default_host'],
+    hlt_segment = (pm_hltsv.create_hlt_segment(config_db,
+                                               farm_dict['default_host'],
                                                farm_dict['hltsv'],
                                                farm_dict['sfos']))
-    pm_hltsv.add_dcm_segments(db, hlt_segments)
+    pm_hltsv.add_dcm_segments(config_db, hlt_segments)
     part_segments.append(hlt_segment)
     
-    ros_segment = pm_ros.create_ros_segment(db)
+    ros_segment = pm_ros.create_ros_segment(config_db)
     part_segments.append(ros_segment)
     
     part_params = {
-                   'db'       : db, 
+                   'config_db'       : config_db, 
                    'part_name': farm_dict['name'],
                    'repository_root': repository_root,
                    'segments': part_segments,

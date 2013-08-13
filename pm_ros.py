@@ -6,21 +6,22 @@ but rather it is imported from external files.
 
 from pm.dal import dal
 
-def create_ros_segment(db):
+def create_ros_segment(config_db):
     ros_segment = dal.Segment("ROS")
 
-    for ros_unit in db.getObject("ROS"):
+    for ros_unit in config_db.getObject("ROS"):
         ros_segment.Resources.append(ros_unit)
 
-    defrc_controller = db.getObject("RunControlTemplateApplication", "DefRC")
-    ros_segment.IsControlledBy = defrc_controller
-    db.updateObjects([ros_segment])
+    defrc_controller = config_db.getObject("RunControlTemplateApplication",
+                                           "DefRC")
+    ros_segment.IsControlleconfig_dby = defrc_controller
+    config_db.updateObjects([ros_segment])
     return ros_segment
 
 
 
-#def create_ros_segment(db):
+#def create_ros_segment(config_db):
     #get ros segment from included schema file
-#    ros_segment = db.getObject("Segment", "ROS-TDQ-emulated-dc")
+#    ros_segment = config_db.getObject("Segment", "ROS-TDQ-emulated-dc")
 #    return ros_segment
 #
