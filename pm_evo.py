@@ -1,14 +1,30 @@
-#!/usr/bin/env tdaq_python
+"""
+This module creates a complete partition in a bottom up approach
+according to the farm description it loads from the file provided as
+command-line argument and the other command line arguments. Starts
+from the standalone hlt segments which don't contain any other
+segments and then moves up to the top level segments(HLTSV, ROS) and
+then finally to the partition object.  No error checking yet on the
+sanity of the provided command line arguments and the farm dictionary
+"""
 
 from pm.project import Project
 import argparse
 from pprint import pprint
 import pm_ros
 import pm_common
-import pm_hltsv 
-import pm_hlt 
+import pm_hltsv
+import pm_hlt
 import pm_partition
 import imp
+
+IMPORT_ERROR_MESSAGE = "Couldn't import module provided"
+ATTR_ERROR_MESSAGE = (
+                     """
+                     Couldn't find dictionary with
+                     default name(farm_dict) in module provided"
+                     """
+                     )
 
 def get_farm_dict(module_name):
     farm_gen = imp.find_module(module_name)
@@ -19,27 +35,29 @@ def get_farm_dict(module_name):
 def create_config_db(args):
     hlt_segments = []
     part_segments = []
-    farm_dict = get_farm_dict(args.farm_file)
-    
-    farm_dict['name'] = args.partition_name
-    repository_root = args.repository_root
-    data_networks = args.data_networks
-    multicast_address = args.multicast_address
+    try:
+        farm_dict = get_farm_dict(args.farm_file)
+    except ImportError:
+        print(IMPORT_ERROR_MESSAGE)
+    except AttributeError:
+        print(ATTR_ERROR_MESSAGE)
+    finally:
+        return
 
     full_includes = pm_common.DEFAULT_INCLUDES + args.extra_includes
-    config_db = Project(farm_dict['name'] + ".data.xml", full_includes)
+    config_db = Project(args.partition_name + ".data.xml", full_includes)
     if args.local:
         local_host = farm_dict['default_host']
-        for iface in lh.Interfaces:
+        for iface in local_host.Interfaces:
             config_db.updateObjects([iface])
-            
+
         config_db.updateObjects([local_host])
-    
+
     pm_common.create_config_rules(config_db)
     pm_common.create_default_gatherer_options(config_db)
     pm_common.create_template_applications(config_db, args.dcm_only,
                                            args.hltpu_only)
-    
+
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
         dcm['dcm_only'] = args.dcm_only
@@ -53,22 +71,21 @@ def create_config_db(args):
                                                farm_dict['sfos']))
     pm_hltsv.add_dcm_segments(config_db, hlt_segments)
     part_segments.append(hlt_segment)
-    
+
     ros_segment = pm_ros.create_ros_segment(config_db)
     part_segments.append(ros_segment)
-    
+
     part_params = {
-                   'config_db'       : config_db, 
-                   'part_name': farm_dict['name'],
-                   'repository_root': repository_root,
-                   'segments': part_segments,
-                   'data_networks':data_networks,
-                   'multicast_address':multicast_address,
-                   'default_host': farm_dict['default_host']
+                   'config_db'         : config_db,
+                   'part_name'         : args.partition_name,
+                   'repository_root'   : args.repository_root,
+                   'segments'          : part_segments,
+                   'data_networks'     : args.data_networks,
+                   'multicast_address' : args.multicast_address,
+                   'default_host'      : farm_dict['default_host']
                    }
 
     pm_partition.create_partition(**part_params)
-    
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -93,7 +110,7 @@ def get_parser():
     parser.add_argument("-p", "--partition-name", required=False,
                         default="az_test")
     return parser
-    
+
 def command_line_runner():
     parser = get_parser()
     args = parser.parse_args()
@@ -102,10 +119,8 @@ def command_line_runner():
     if args.hltpu_only and args.dcm_only:
         print("Incompatible options hltpu-only and dcm-only.")
         return
-    
+
     create_config_db(args)
-    
+
 if __name__ == '__main__':
     command_line_runner()
-    
-    
