@@ -27,7 +27,7 @@ controller_host = testbed_hosts['pc-tbed-r3-02']
 sfos = pm.farm.subselect_pattern(testbed_hosts,
                                  'pc-tbed-r3-[%02d-%02d]' % (21,22))
 
-ffarm_dict = partition(controller_host, dcm_segments,
+farm_dict = partition(controller_host, dcm_segments,
                       hltsv_host, sfos.values())
-pprint(ffarm_dict)
+pprint(farm_dict)
 
