@@ -18,7 +18,7 @@ import pm_hlt
 import pm_partition
 import imp
 
-IMPORT_ERROR_MESSAGE = "Couldn't import module provided"
+IMPORT_ERROR_MESSAGE = "Couldn't import module provided: %s"
 ATTR_ERROR_MESSAGE = (
                      """
                      Couldn't find dictionary with
@@ -38,7 +38,7 @@ def create_config_db(args):
     try:
         farm_dict = get_farm_dict(args.farm_file)
     except ImportError:
-        print(IMPORT_ERROR_MESSAGE)
+        print(IMPORT_ERROR_MESSAGE % args.farm_file)
     except AttributeError:
         print(ATTR_ERROR_MESSAGE)
     finally:
