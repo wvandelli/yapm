@@ -14,8 +14,8 @@ DEFAULT_INCLUDES = ['daq/segments/setup.data.xml',
                     'daq/schema/HLTMPPU.schema.xml',
                     'daq/schema/MonInfoGatherer.schema.xml',
                     'daq/schema/dcm.schema.xml',
-                    'daq/sw/tags.data.xml',
-                    'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml']
+                    'daq/sw/tags.data.xml'
+                    ]
 
 def get_farm_dict(module_name):
     farm_gen = imp.find_module(module_name)
@@ -32,7 +32,7 @@ def create_config_db(args):
 
     full_includes = DEFAULT_INCLUDES + args.extra_includes
     
-    config_db = Project(args.segment_name + ".data.xml", full_includes)
+    config_db = Project("HLT.data.xml", full_includes)
     if args.local:
         local_host = farm_dict['default_host']
         for iface in local_host.Interfaces:
@@ -73,8 +73,7 @@ def get_parser():
                         action="store_true")
     parser.add_argument("--local", required=False, default=False,
                         action="store_true")
-    parser.add_argument("-s", "--segment-name", required=False,
-                        default="HLT")
+
     return parser
 
 def command_line_runner():
