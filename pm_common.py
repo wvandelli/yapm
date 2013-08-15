@@ -131,7 +131,7 @@ def create_dcm_application(config_db, standalone):
     #processor applications
     dcm_dummy_processor = dcm_dal.DcmDummyProcessor("dcm_dummy_processor")
     dcm_hltpu_processor = dcm_dal.DcmHltpuProcessor("dcm_hltpu_processor")
-    config_db.updateObjects([dcm_dummy_processor])
+    config_db.updateObjects([dcm_dummy_processor, dcm_hltpu_processor])
 
     #output applications
     dcm_file_output = dcm_dal.DcmFileOutput("dcm_file_output")
