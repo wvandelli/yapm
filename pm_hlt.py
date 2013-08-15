@@ -97,6 +97,9 @@ def create_dcm_segment(**dcm_args):
     dcm_segment.Infrastructure = [is_server, oh_server, rconfig_db]
 
     #Resources
+    mon_is = config_db.getObject("MIGApplication", "DefMIG-IS")
+    mon_oh = config_db.getObject("MIGApplication", "DefMIG-OH")
+    dcm_segment.Resources = [mon_is, mon_oh]
     """
     gatherer_app = create_gatherer_application(config_db, name,
     oh_server)
