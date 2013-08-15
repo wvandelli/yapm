@@ -39,13 +39,14 @@ def create_config_db(args):
         farm_dict = get_farm_dict(args.farm_file)
     except ImportError:
         print(IMPORT_ERROR_MESSAGE % args.farm_file)
+        return
     except AttributeError:
         print(ATTR_ERROR_MESSAGE)
-    finally:
         return
 
     full_includes = pm_common.DEFAULT_INCLUDES + args.extra_includes
     config_db = Project(args.partition_name + ".data.xml", full_includes)
+    print "created file"
     if args.local:
         local_host = farm_dict['default_host']
         for iface in local_host.Interfaces:
@@ -72,8 +73,8 @@ def create_config_db(args):
     pm_hltsv.add_dcm_segments(config_db, hlt_segments)
     part_segments.append(hlt_segment)
 
-    ros_segment = pm_ros.create_ros_segment(config_db)
-    part_segments.append(ros_segment)
+    #ros_segment = pm_ros.create_ros_segment(config_db)
+    #part_segments.append(ros_segment)
 
     part_params = {
                    'config_db'         : config_db,
