@@ -121,10 +121,9 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
     hltsv_resources = [hltsv_app, top_gatherer_app] + sfo_apps
     hltsv_segment.Resources = hltsv_resources
 
-    top_aggregator_app = pm_common.create_aggregator_app(db,
-                                                         "top_aggregator.py",
-                                                         default_host)
-    hltsv_segment.Applications = [aggregator_app]
+    top_aggregator_app = create_aggregator_app(config_db, "top_aggregator.py",
+                                               default_host)
+    hltsv_segment.Applications = [top_aggregator_app]
 
     hltsv_segment.DefaultHost = default_host
 
