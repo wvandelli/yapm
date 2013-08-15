@@ -123,9 +123,9 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
     
     hltsv_segment.DefaultHost = default_host
 
-    aggregator_app = create_aggregator_app(config_db, "top_aggregator.py",
-                             default_host)
-    hltsv_segment.Applications.append(aggregator_app)
+#    aggregator_app = create_aggregator_app(config_db, "top_aggregator.py",
+#                             default_host)
+#    hltsv_segment.Applications.append(aggregator_app)
 
     config_db.updateObjects([hltsv_segment])
     
