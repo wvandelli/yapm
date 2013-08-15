@@ -82,11 +82,11 @@ def create_hltpu_templates(config_db):
 def create_template_applications(config_db, dcm_only,
                                  hltpu_only):
     if dcm_only:
-        create_dcm_application(config_db)
+        create_dcm_application(config_db, standalone=True)
     elif hltpu_only:
         create_hltpu_templates(config_db)
     else:
-        create_dcm_application(config_db)
+        create_dcm_application(config_db, standalone=False)
         create_hltpu_templates(config_db)
 
 def create_hltpu_application(config_db):
@@ -111,7 +111,7 @@ def create_hltpu_application(config_db):
     return hltrc_app
 
     
-def create_dcm_application(config_db):
+def create_dcm_application(config_db, standalone):
     config_rules = (config_db.getObject("ConfigurationRuleBundle",
                                  "DefaultConfigurationRuleBundle"))
     dcm_main = config_db.getObject("Binary", "dcm_main")
@@ -130,6 +130,7 @@ def create_dcm_application(config_db):
     
     #processor applications
     dcm_dummy_processor = dcm_dal.DcmDummyProcessor("dcm_dummy_processor")
+    dcm_hltpu_processor = dcm_dal.DcmHltpuProcessor("dcm_hltpu_processor")
     config_db.updateObjects([dcm_dummy_processor])
 
     #output applications
@@ -146,11 +147,16 @@ def create_dcm_application(config_db):
     dcm_efio_output = dcm_dal.DcmSfoEfioOutput("DcmSfoEfioOutput-1")
     dcm_efio_output.EfioConfiguration = efio_config
     config_db.updateObjects([dcm_efio_output])
+    dcm_sfo_output = dcm_dal.DcmSfoOutput("SFO-OutConfiguration-1")
+    config_db.updateObjects([dcm_sfo_output])
     
     dcm_app = dcm_dal.DcmApplication("dcm")
     dcm_app.l1Source = hltsv_l1source
     dcm_app.dataCollector = dcm_dummy_dc
-    dcm_app.processor = dcm_dummy_processor
+    if standalone:
+        dcm_app.processor = dcm_dummy_processor
+    else:
+        dcm_app.processor = dcm_hltpu_processor
     dcm_app.output = dcm_file_output
     dcm_app.Program = dcm_main
     dcm_app.ConfigurationRules = config_rules
