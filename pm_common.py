@@ -159,7 +159,7 @@ def create_dcm_application(config_db, sfos_exist, standalone):
         dcm_app.processor = dcm_hltpu_processor
         
     if sfos_exist:
-        dcm_app.output = dcm_sfo_output
+        dcm_app.output = dcm_efio_output
     else:
         dcm_app.output = dcm_file_output
 
