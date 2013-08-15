@@ -17,7 +17,9 @@ DEFAULT_INCLUDES = ['daq/segments/setup.data.xml',
                     'daq/schema/MonInfoGatherer.schema.xml',
                     'daq/schema/dcm.schema.xml',
                     'daq/sw/tags.data.xml',
-                    'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml']
+                    'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml',
+                    'daq/sw/common-templates.data.xml'
+                    ]
 
 def create_default_gatherer_options(config_db):
     gatherer_dal = dal_module("gatherer_dal",
@@ -93,8 +95,10 @@ def create_hltpu_application(config_db):
     hlt_data_source = hltpu_dal.HLTDFDCMBackend("hltDataSource")
     config_db.updateObjects([hlt_data_source])
 
-    hlt_mon_service = hltpu_dal.HLTInfoServiceImpl("MonSvcInfoService")
-    hlt_mon_service.library = "MonSvcInfoService"
+    hlt_mon_service = hltpu_dal.HLTMonInfoImpl("MonInfoService")
+    def_con_rules = config_db.getObject("ConfigurationRuleBundle" , 
+                                        "DefaultConfigurationRuleBundle")
+    hlt_mon_service.ConfigurationRules = def_con_rules
     config_db.updateObjects([hlt_mon_service])
 
     #now time to create the actual HLTMPPU application
