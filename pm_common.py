@@ -82,11 +82,11 @@ def create_hltpu_templates(config_db):
 def create_template_applications(config_db, dcm_only,
                                  hltpu_only, sfos_exist):
     if dcm_only:
-        create_dcm_application(config_db, standalone=True, sfos_exist)
+        create_dcm_application(config_db, sfos_exist, standalone=True)
     elif hltpu_only:
         create_hltpu_templates(config_db)
     else:
-        create_dcm_application(config_db, standalone=False, sfos_exist)
+        create_dcm_application(config_db, sfos_exist, standalone=False)
         create_hltpu_templates(config_db)
 
 def create_hltpu_application(config_db):
@@ -111,7 +111,7 @@ def create_hltpu_application(config_db):
     return hltrc_app
 
     
-def create_dcm_application(config_db, standalone, sfos_exist):
+def create_dcm_application(config_db, sfos_exist, standalone):
     config_rules = (config_db.getObject("ConfigurationRuleBundle",
                                  "DefaultConfigurationRuleBundle"))
     dcm_main = config_db.getObject("Binary", "dcm_main")
