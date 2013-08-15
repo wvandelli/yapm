@@ -57,7 +57,7 @@ def create_config_db(args):
     pm_common.create_config_rules(config_db)
     pm_common.create_default_gatherer_options(config_db)
     pm_common.create_template_applications(config_db, args.dcm_only,
-                                           args.hltpu_only)
+                                           args.hltpu_only, farm_dict['sfos'])
 
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
