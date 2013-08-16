@@ -133,10 +133,12 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
     oh_server = config_db.getObject("InfrastructureTemplateApplication",
                                     "DF_Histogramming")
     hltsv_segment.Infrastructure = [is_server, oh_server]
+    
     #Resources
-    mon_is = config_db.getObject("MIGApplication", "DefMIG-IS")
-    mon_oh = config_db.getObject("MIGApplication", "DefMIG-OH")
-    hltsv_segment.Resources = [mon_is, mon_oh]
+    mon_is = config_db.getObject("MIGApplication", "TopMIG-IS")
+    mon_oh = config_db.getObject("MIGApplication", "TopMIG-OH")
+    hltsv_segment.Resources.append(mon_is)
+    hltsv_segment.Resources.append(mon_oh)
     
     config_db.updateObjects([hltsv_segment])
     
