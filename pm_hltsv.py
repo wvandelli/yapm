@@ -18,7 +18,7 @@ def create_top_gatherer(config_db):
                            MIGConfiguration("GathererConfiguration-Top"))
     gatherer_config_top.ProviderRegExp = "Histogramming-.*"
     top_histo_server = config_db.getObject("InfrastructureApplication",
-                                    "Histogramming")
+                                           "Histogramming")
     gatherer_config_top.SourceServers = [top_histo_server]
     gatherer_config_top.DestinationServers = [top_histo_server]
     gatherer_config_top.InformationHandler = info_handler
@@ -127,6 +127,17 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
 
     hltsv_segment.DefaultHost = default_host
 
+    #infrastructure applications
+    is_server = config_db.getObject("InfrastructureTemplateApplication",
+                                    "DF_IS")
+    oh_server = config_db.getObject("InfrastructureTemplateApplication",
+                                    "DF_Histogramming")
+    hltsv_segment.Infrastructure = [is_server, oh_server]
+    #Resources
+    mon_is = config_db.getObject("MIGApplication", "DefMIG-IS")
+    mon_oh = config_db.getObject("MIGApplication", "DefMIG-OH")
+    hltsv_segment.Resources = [mon_is, mon_oh]
+    
     config_db.updateObjects([hltsv_segment])
     
     return hltsv_segment
