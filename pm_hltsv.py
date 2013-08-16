@@ -104,8 +104,6 @@ def create_hltsv_app(config_db, hltsv_host):
     return hltsv_app
 
 def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
-    top_gatherer_app = create_top_gatherer(config_db)
-    
     hltsv_segment = dal.Segment("HLT")
     defrc_controller = config_db.getObject("RunControlTemplateApplication",
                                            "DefRC")
@@ -118,7 +116,7 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
                                                  sfo_host)
         sfo_apps.append(sfo_application)
         
-    hltsv_resources = [hltsv_app, top_gatherer_app] + sfo_apps
+    hltsv_resources = [hltsv_app] + sfo_apps
     hltsv_segment.Resources = hltsv_resources
 
     top_aggregator_app = create_aggregator_app(config_db, "top_aggregator.py",
