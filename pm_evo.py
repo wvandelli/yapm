@@ -46,7 +46,7 @@ def create_config_db(args):
 
     full_includes = pm_common.DEFAULT_INCLUDES + args.extra_includes
     config_db = Project(args.partition_name + ".data.xml", full_includes)
-    print "created file"
+
     if args.local:
         local_host = farm_dict['default_host']
         for iface in local_host.Interfaces:
