@@ -7,7 +7,7 @@ from farm_utils import dcm_segment, partition, get_hosts
 from pprint import pprint
 
 #create 2 dcm segments
-testbed_hosts = get_hosts(['daq/hw/hosts.data.xml'])
+testbed_hosts = get_hosts(['hosts.data.xml'])
 dcm1_hosts = pm.farm.subselect_pattern(testbed_hosts,
                                        'pc-tbed-r3-[%02d-%02d]' % (1,10))
 dcm2_hosts = pm.farm.subselect_pattern(testbed_hosts,
