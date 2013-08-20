@@ -9,27 +9,28 @@ from config.dal import module as dal_module
 import os
 
 
-DEFAULT_INCLUDES = ['daq/segments/setup.data.xml',
+#DEFAULT_INCLUDES = ['daq/segments/setup.data.xml',
+#                    'daq/schema/hltsv.schema.xml',
+#                    'daq/sw/repository.data.xml',
+#                    'dcm/schema/dcm_is.schema.xml',
+#                    'daq/schema/HLTMPPU.schema.xml',
+#                    'daq/schema/MonInfoGatherer.schema.xml',
+##                     'daq/schema/dcm.schema.xml',
+##                     'daq/sw/tags.data.xml',
+##                     'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml',
+##                     'daq/sw/common-templates.data.xml'
+##                     ]
+
+DEFAULT_INCLUDES = ['hosts.data.xml',
+                    'daq/segments/setup.data.xml',
                     'daq/schema/hltsv.schema.xml',
-                    'daq/sw/repository.data.xml',
-                    'dcm/schema/dcm_is.schema.xml',
                     'daq/schema/HLTMPPU.schema.xml',
-                    'daq/schema/MonInfoGatherer.schema.xml',
+                    'daq/sw/repository.data.xml',
                     'daq/schema/dcm.schema.xml',
                     'daq/sw/tags.data.xml',
-                    'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml',
+                    'PuDummy.data.xml',
                     'daq/sw/common-templates.data.xml'
                     ]
-
-def create_default_gatherer_options(config_db):
-    gatherer_dal = dal_module("gatherer_dal",
-                              'daq/schema/MonInfoGatherer.schema.xml')
-    gatherer_algorithm = gatherer_dal.MIGAlgorithm("DefaultGathererAlgorithm")
-    config_db.updateObjects([gatherer_algorithm])
-    info_handler = (gatherer_dal.
-                    MIGInformationHandler("DefaultGathererInformationHandler"))
-    info_handler.Algorithm = gatherer_algorithm
-    config_db.updateObjects([info_handler])
 
 def create_config_rules(config_db):
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
@@ -93,6 +94,7 @@ def create_hltpu_application(config_db):
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
 
     hlt_data_source = hltpu_dal.HLTDFDCMBackend("hltDataSource")
+    hlt_data_source.library = "dfInterfaceDcm"
     config_db.updateObjects([hlt_data_source])
 
     hlt_mon_service = hltpu_dal.HLTMonInfoImpl("MonInfoService")
@@ -151,8 +153,9 @@ def create_dcm_application(config_db, sfos_exist, standalone):
     config_db.updateObjects([dcm_sfo_output])
     
     dcm_app = dcm_dal.DcmApplication("dcm")
+    dcm_app.RestartableDuringRun = True
     dcm_app.l1Source = hltsv_l1source
-    dcm_app.dataCollector = dcm_dummy_dc
+    dcm_app.dataCollector = dcm_ros_dc
     if standalone:
         dcm_app.processor = dcm_dummy_processor
     else:
@@ -171,17 +174,21 @@ def create_dcm_application(config_db, sfos_exist, standalone):
 
 def create_aggregator_app(config_db, script_name, default_host,
                           segment_name=""):
+    
     dal_script_name = os.path.splitext(script_name)[0]
-    aggregator_script = dal.Script(dal_script_name)
-    aggregator_script.BinaryName = script_name
-    repository = config_db.getObject("SW_Repository", "Online")
-    aggregator_script.BelongsTo = repository
-    config_db.updateObjects([aggregator_script])
+##     aggregator_script = dal.Script(dal_script_name)
+##     aggregator_script.BinaryName = script_name
+##     repository = config_db.getObject("SW_Repository", "Online")
+##     aggregator_script.BelongsTo = repository
+##     config_db.updateObjects([aggregator_script])
+    
     if not segment_name == "":
-        aggregator_app = dal.Application("DCM-" + dal_script_name + "-" +
+        aggregator_script = config_db.getObject("Script", "aggregator")
+        aggregator_app = dal.Application("DCM-" + aggregator_script.id + "-" +
                                          segment_name)
     else:
-        aggregator_app = dal.Application("DCM-" + dal_script_name)
+        aggregator_script = config_db.getObject("Script", "top_aggregator")
+        aggregator_app = dal.Application("DCM-" + aggregator_script.id)
     aggregator_app.Program = aggregator_script
     aggregator_app.RunsOn = default_host
     aggregator_app.Parameters = "-T DCM"
