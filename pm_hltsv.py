@@ -1,36 +1,11 @@
 """
 This module creates the DAL component representation of the HLTSV segment
-and all other DAL components which are speficic to this segment.
+and all other DAL components which are specific to this segment.
 """
 
 from pm.dal import dal, DFdal
 from config.dal import module as dal_module
 from pm_common import create_aggregator_app
-
-def create_top_gatherer(config_db):
-    gatherer_dal = dal_module("gatherer_dal",
-                              'daq/schema/MonInfoGatherer.schema.xml')
-    gatherer_algorithm = config_db.getObject("MIGAlgorithm",
-                                      "DefaultGathererAlgorithm")
-    info_handler = config_db.getObject("MIGInformationHandler",
-                                "DefaultGathererInformationHandler")
-    gatherer_config_top = (gatherer_dal.
-                           MIGConfiguration("GathererConfiguration-Top"))
-    gatherer_config_top.ProviderRegExp = "Histogramming-.*"
-    top_histo_server = config_db.getObject("InfrastructureApplication",
-                                           "Histogramming")
-    gatherer_config_top.SourceServers = [top_histo_server]
-    gatherer_config_top.DestinationServers = [top_histo_server]
-    gatherer_config_top.InformationHandler = info_handler
-    gatherer_config_top.Algorithm = gatherer_algorithm
-    config_db.updateObjects([gatherer_config_top])
-
-    top_gatherer_app = gatherer_dal.MIGApplication("Gatherer-Top")
-    gatherer_bin = config_db.getObject("Binary", "MonInfoGatherer")
-    top_gatherer_app.Program = gatherer_bin
-    top_gatherer_app.Configurations = [gatherer_config_top]
-    config_db.updateObjects([top_gatherer_app])
-    return top_gatherer_app
 
 def create_sfo_application(config_db, number, host):
     """
