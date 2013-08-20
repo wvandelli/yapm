@@ -86,7 +86,7 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
     hltsv_app = create_hltsv_app(config_db, hltsv_host)
 
     sfo_apps = []
-    for index, sfo_host in enumerate(sfos):
+    for index, sfo_host in zip(range(1, len(sfos)+1), sfos):
         sfo_application = create_sfo_application(config_db, str(index),
                                                  sfo_host)
         sfo_apps.append(sfo_application)
