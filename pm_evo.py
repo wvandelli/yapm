@@ -18,12 +18,7 @@ import pm_partition
 import imp
 
 IMPORT_ERROR_MESSAGE = "Couldn't import module provided: %s"
-ATTR_ERROR_MESSAGE = (
-                     """
-                     Couldn't find dictionary with
-                     default name(farm_dict) in module provided"
-                     """
-                     )
+ATTR_ERROR_MESSAGE = "Couldn't find dictionary with default name(farm_dict) in module provided"
 
 def get_farm_dict(module_name):
     farm_gen = imp.find_module(module_name)
@@ -55,7 +50,6 @@ def create_config_db(args):
         config_db.updateObjects([local_host])
 
     pm_common.create_config_rules(config_db)
-    pm_common.create_default_gatherer_options(config_db)
     pm_common.create_template_applications(config_db, args.dcm_only,
                                            args.hltpu_only, farm_dict['sfos'])
 
