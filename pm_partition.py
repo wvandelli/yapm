@@ -6,12 +6,18 @@ related objects(counters etc.)
 from pm.dal import dal, DFdal
 from pm.project import Project
 
-TAGS = [
-        'x86_64-slc6-gcc47-opt',
+## TAGS = [
+##         'x86_64-slc6-gcc47-opt',
+##         'x86_64-slc5-gcc47-opt',
+##         'x86_64-slc6-gcc47-config_dbg',
+##         'x86_64-slc5-gcc47-config_dbg'
+##         ]
+TAGS = ['x86_64-slc6-gcc47-opt',
+        'x86_64-slc6-gcc47-dbg',
         'x86_64-slc5-gcc47-opt',
-       ]
-#'x86_64-slc6-gcc47-config_dbg',
-#        'x86_64-slc5-gcc47-config_dbg',
+        'x86_64-slc5-gcc47-dbg',
+        ]
+
 def create_counters(config_db):
     l1_rates = dal.IS_EventsAndRates("L1_counters")
     l1_rates.EventCounter = "DF.HLTSV.Events.LVL1Events"
