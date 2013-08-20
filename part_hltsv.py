@@ -7,15 +7,28 @@ import pm_hlt
 import pm_partition
 import imp
 
-DEFAULT_INCLUDES = ['daq/segments/setup.data.xml',
+DEFAULT_INCLUDES = ['daq/hw/hosts.data.xml',
+                    'daq/segments/setup.data.xml',
                     'daq/schema/hltsv.schema.xml',
-                    'daq/sw/repository.data.xml',
-                    'dcm/schema/dcm_is.schema.xml',
                     'daq/schema/HLTMPPU.schema.xml',
-                    'daq/schema/MonInfoGatherer.schema.xml',
+                    'daq/sw/repository.data.xml',
                     'daq/schema/dcm.schema.xml',
-                    'daq/sw/tags.data.xml'
+                    'daq/sw/tags.data.xml',
+                    'daq/sw/common-templates.data.xml'
                     ]
+
+def get_post_process(module_name):
+    post_process = imp.find_module(module_name)
+    post_process_module = imp.load_module(module_name, post_process[0], post_process[1],
+                                          post_process[2])
+    return post_process_module.modify
+
+def post_process(args, config_db):
+    if not args.post_processor: return 
+    modify = get_post_process(args.post_processor)
+    hlt_segment = modify(config_db)
+
+    return hlt_segment
 
 def get_farm_dict(module_name):
     farm_gen = imp.find_module(module_name)
@@ -41,9 +54,8 @@ def create_config_db(args):
         config_db.updateObjects([local_host])
 
     pm_common.create_config_rules(config_db)
-    pm_common.create_default_gatherer_options(config_db)
     pm_common.create_template_applications(config_db, args.dcm_only,
-                                           args.hltpu_only)
+                                           args.hltpu_only, farm_dict['sfos'])
 
     for dcm in farm_dict['dcms']:
         dcm['hltpu_only'] = args.hltpu_only
@@ -57,6 +69,8 @@ def create_config_db(args):
                                                farm_dict['hltsv'],
                                                farm_dict['sfos']))
     pm_hltsv.add_dcm_segments(config_db, hlt_segments)
+    post_process(args, config_db)
+    
 
 
 def get_parser():
@@ -73,6 +87,8 @@ def get_parser():
                         action="store_true")
     parser.add_argument("--local", required=False, default=False,
                         action="store_true")
+    parser.add_argument("-z", "--post-processor", required=False,
+                        default=None)
 
     return parser
 
