@@ -78,7 +78,7 @@ def create_hltsv_app(config_db, hltsv_host):
     
     return hltsv_app
 
-def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
+def create_hlt_segment(config_db, default_host, hltsv_host, sfos, hlt_segments):
     hltsv_segment = dal.Segment("HLT")
     defrc_controller = config_db.getObject("RunControlTemplateApplication",
                                            "DefRC")
@@ -112,15 +112,10 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos):
     mon_oh = config_db.getObject("MIGApplication", "TopMIG-OH")
     hltsv_segment.Resources.append(mon_is)
     hltsv_segment.Resources.append(mon_oh)
-    
+
+    for d_segment in hlt_segments:
+        hltsv_segment.Segments.append(d_segment)
+        
     config_db.updateObjects([hltsv_segment])
     
     return hltsv_segment
-
-def add_dcm_segments(config_db, dcm_segments):
-    hltsv_segment = config_db.getObject("Segment", "HLT")
-    #add all the dcm segments to the hlt segment
-    for d_segment in dcm_segments:
-        hltsv_segment.Segments.append(d_segment)
-       
-    config_db.updateObjects([hltsv_segment])
