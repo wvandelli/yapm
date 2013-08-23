@@ -68,8 +68,9 @@ def create_hltpu_templates(config_db):
     that only need to be created once
     """
     #first create the hltmppu template
+    hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
     app_parameters = "-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so"
-    hltmppu_template = dal.TemplateApplication("HLTMPPU-Template")
+    hltmppu_template = hltpu_dal.HLTMPPUApplication("HLTMPPU-Template")
     hltmppu_template.Parameters = app_parameters
     hltmppu_template.RestartParameters = app_parameters
     hltmppu_template.InitTimeout = 0
@@ -94,7 +95,7 @@ def create_hltpu_application(config_db):
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
 
     hlt_data_source = hltpu_dal.HLTDFDCMBackend("hltDataSource")
-    hlt_data_source.library = "dfInterfaceDcm"
+    hlt_data_source.library = "dfinterfaceDcm"
     config_db.updateObjects([hlt_data_source])
 
     hlt_mon_service = hltpu_dal.HLTMonInfoImpl("MonInfoService")
@@ -127,6 +128,7 @@ def create_dcm_application(config_db, sfos_exist, standalone):
     
     #data collectors
     dcm_ros_dc = dcm_dal.DcmRosDataCollector("dcm_ros_dc")
+    dcm_ros_dc.nRequestCredits = 20
     dcm_dummy_dc = dcm_dal.DcmDummyDataCollector("DCMDummyDataCollector")
     config_db.updateObjects([dcm_ros_dc, dcm_dummy_dc])
     
@@ -141,9 +143,9 @@ def create_dcm_application(config_db, sfos_exist, standalone):
     config_db.updateObjects([dcm_file_output])
     efio_config = dcm_dal.EFIOConfiguration("EFIO-Configuration-1")
     efio_config.MaxEFIOHandlers = 15
+    efio_config.SFI_EFD_AckTimeout_ms = 5000
+    efio_config.EFD_SFO_RcvTimeout_ms = 5000
     efio_config.HiddenParams.append("DelayConnect_s=2")
-    efio_config.SFI_EFD_AckTimeout_ms = 600000
-    efio_config.EFD_SFO_RcvTimeout_ms = 600000
     efio_config.NetMask = "10.148.0.0/16"
     config_db.updateObjects([efio_config])
     dcm_efio_output = dcm_dal.DcmSfoEfioOutput("DcmSfoEfioOutput-1")
