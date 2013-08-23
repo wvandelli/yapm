@@ -67,8 +67,8 @@ def create_config_db(args):
     hlt_segment = (pm_hltsv.create_hlt_segment(config_db,
                                                farm_dict['default_host'],
                                                farm_dict['hltsv'],
-                                               farm_dict['sfos']))
-    pm_hltsv.add_dcm_segments(config_db, hlt_segments)
+                                               farm_dict['sfos'],
+                                               hlt_segments))
     post_process(args, config_db)
     
 
