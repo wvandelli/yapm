@@ -57,11 +57,9 @@ def create_config_db(args):
 
     yapm.common.create_config_rules(config_db)
     templ_apps = yapm.common.create_template_applications(config_db, args.dcm_only,
-                                                        args.hltpu_only,
-                                                        farm_dict['sfos'])
+                                                          args.hltpu_only,
+                                                          farm_dict['sfos'])
     for dcm in farm_dict['dcms']:
-        dcm['hltpu_only'] = args.hltpu_only
-        dcm['dcm_only'] = args.dcm_only
         dcm['config_db'] = config_db
         dcm['templ_apps'] = templ_apps
         dcm_segment = yapm.hlt.create_dcm_segment(**dcm)
@@ -79,19 +77,32 @@ def create_config_db(args):
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--farm-file",
-                        help='Farm that contains dictionary',
+                        help='Python module that contains a dictionary that contains a\
+                              dictionary \n named \'farm_dict\' that contains a description\
+                              of the farm.',
                         required=True)
     parser.add_argument("-I", "--extra-includes", nargs='+',
-                        help='Add include files',
+                        help='Extra OKS includes for the output database.',
                         required=False, type=str, default=[])
     parser.add_argument("--dcm-only", required=False, default=False,
-                        action="store_true")
+                        action="store_true",
+                        help="Indicates whether a dcm-only \
+                              configuration is needed.")
     parser.add_argument("--hltpu-only", required=False, default=False,
-                        action="store_true")
+                        action="store_true",
+                        help="Indicates whether a PU-only \
+                              configuration is needed.")
     parser.add_argument("--local", required=False, default=False,
-                        action="store_true")
-    parser.add_argument("-z", "--post-processor", required=False,
-                        default=None)
+                        action="store_true",
+                        help="Indicates whether a localhost \
+                              configuration is needed.")
+    parser.add_argument("-z", "--post-processor", required=False, default=None,
+                        help="Point to a Python module containing a \
+                              modify function that \n\ takes as input \
+                              the database created by the script and\
+                              modifies it in some way.Useful if\
+                              creating a non-standard segment or\
+                              partition.")
 
     return parser
 
