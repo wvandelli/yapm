@@ -9,9 +9,13 @@ from common import create_aggregator_app
 
 def create_sfo_application(config_db, number, host):
     """
-    Creates an SFO application with a specific id(number argument) to be used
-    in its name. So for example an SFO taking as argument number 1 will be named
-    SFO-01 etc. The host is the machine that the SFO application will run on.
+    Create an SFO application and return it.
+
+    Arguments:
+      config_db -- the database under creation
+      number -- a unique number identifier for the application
+      host -- a DAL computer object where the application should run
+
     """
     efio_config = config_db.getObject("EFIOConfiguration", "EFIO-Configuration-1")
     #first create the app configuration
@@ -53,6 +57,13 @@ def create_sfo_application(config_db, number, host):
     return sfo_app
 
 def create_hltsv_app(config_db, hltsv_host):
+    """
+    Create an HLTSV application and return it.
+
+    Arguments:
+      config_db -- the configuration database
+      hltsv_host -- a DAL computer object where the application should run
+    """
     config_rules = config_db.getObject("ConfigurationRuleBundle",
                                        "DefaultConfigurationRuleBundle")
     hltsv_dal = dal_module("hltsv_dal", 'daq/schema/hltsv.schema.xml')
@@ -71,6 +82,22 @@ def create_hltsv_app(config_db, hltsv_host):
     return hltsv_app
 
 def create_hlt_segment(config_db, default_host, hltsv_host, sfos, hlt_segments):
+    """
+    Create a top-level HLT segment and return it.
+
+    Arguments:
+      config_db -- configuration database
+      default_host -- a DAL Computer object serving as the
+                      main host for the segment
+      hltsv_host -- a DAL Computer object to run the HLTSV application
+
+      sfos -- a list of DAL Computer objects to run the SFO applications
+
+      hlt_segments -- a list of HLT segments to add to this top-level
+                      segment. HLT Segment as returned by:
+                      yapm.hlt.create_hlt_segment
+                      
+    """
     config_rules = config_db.getObject("ConfigurationRuleBundle",
                                        "DefaultConfigurationRuleBundle")
     efio_config = config_db.getObject("EFIOConfiguration", "EFIO-Configuration-1")

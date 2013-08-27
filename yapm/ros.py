@@ -19,9 +19,3 @@ def create_ros_segment(config_db):
     return ros_segment
 
 
-
-#def create_ros_segment(config_db):
-    #get ros segment from included schema file
-#    ros_segment = config_db.getObject("Segment", "ROS-TDQ-emulated-dc")
-#    return ros_segment
-#

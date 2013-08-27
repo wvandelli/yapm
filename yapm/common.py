@@ -1,38 +1,30 @@
 """
 This module creates all the common DAL objects that are needed by more than one
-segments or they are created only once but their container segments are created
-multiple times(template applications)
+segment or they are created only once but their container segments are created
+multiple times(template/aggregator applications)
 """
 
 from pm.dal import dal
 from config.dal import module as dal_module
 import os
 
-
-#DEFAULT_INCLUDES = ['daq/segments/setup.data.xml',
-#                    'daq/schema/hltsv.schema.xml',
-#                    'daq/sw/repository.data.xml',
-#                    'dcm/schema/dcm_is.schema.xml',
-#                    'daq/schema/HLTMPPU.schema.xml',
-#                    'daq/schema/MonInfoGatherer.schema.xml',
-##                     'daq/schema/dcm.schema.xml',
-##                     'daq/sw/tags.data.xml',
-##                     'daq/segments/ROS/ROS-LAR-emulated-dc.data.xml',
-##                     'daq/sw/common-templates.data.xml'
-##                     ]
-
-DEFAULT_INCLUDES = ['hosts.data.xml',
+DEFAULT_INCLUDES = ['/daq/hw/hosts.data.xml',
                     'daq/segments/setup.data.xml',
                     'daq/schema/hltsv.schema.xml',
                     'daq/schema/HLTMPPU.schema.xml',
                     'daq/sw/repository.data.xml',
                     'daq/schema/dcm.schema.xml',
                     'daq/sw/tags.data.xml',
-                    'PuDummy.data.xml',
                     'daq/sw/common-templates.data.xml'
                     ]
 
 def create_config_rules(config_db):
+    """
+    Create the default publishing configuration and the efio
+    configuration that are used by multiple segments/objects
+    and add them to the database so they can be accessed when
+    needed.
+    """
     is_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
 
@@ -67,12 +59,19 @@ def create_config_rules(config_db):
     
     config_db.addObjects([def_config_rules, efio_config])
 
-def create_hltpu_templates(config_db):
+def create_pu_apps(config_db):
     """
-    Here create the template applications of the DCM segments
-    that only need to be created once
+    Create the HLTMPPU template and the HLTRC application and
+    return a list containing them.
     """
-    #first create the hltmppu template
+    hltmppu_template = create_hltmppu_template(config_db)
+    hltrc_app = create_hltrc_application(config_db)
+    return [hltmppu_template, hltrc_app]
+    
+def create_hltmppu_template(config_db):
+    """
+    Create the HLTMPPU template application and return it.
+    """
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
     app_parameters = "-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so"
     hltmppu_template = hltpu_dal.HLTMPPUApplication("HLTMPPU-Template")
@@ -82,23 +81,46 @@ def create_hltpu_templates(config_db):
     hltmppu_main = config_db.getObject("Binary", "HLTMPPU_main")
     hltmppu_template.Program = hltmppu_main
     hltmppu_template.RestartableDuringRun = True
-    
-    hltrc_app = create_hltpu_application(config_db)
-    return [hltmppu_template, hltrc_app]
+
+    return hltmppu_template
 
 def create_template_applications(config_db, dcm_only, hltpu_only,
                                  sfos_exist):
+    """
+    Create the template applications for the HLT Segment(s) and return
+    a list containing them to be used directly as input to the
+    TemplateApplications relation of an HLT Segment.  The arguments
+    serve as directives to know which applications to create and for
+    their internal parameter tuning.
+
+    Arguments:
+      dcm_only -- indicates whether this is a DCM only
+                  configuration (boolean)
+      hltpu_only -- indicates whether this is
+                    a PU only configuration (boolean)
+      sfos_exist -- indicates whether there are SFOs
+                    in the farm description (boolean)
+
+    Returns:
+      A list containing the template applications created based
+      on the arguments given to the function.
+    """
     if dcm_only:
-        templ_apps = create_dcm_application(config_db, sfos_exist, standalone=True)
+        templ_apps = create_dcm_application(config_db, sfos_exist,
+                                            dcm_only)
     elif hltpu_only:
-        templ_apps = create_hltpu_templates(config_db)
+        templ_apps = create_pu_apps(config_db)
     else:
-        templ_apps = (create_dcm_application(config_db, sfos_exist, standalone=False) +
-                      create_hltpu_templates(config_db))
+        templ_apps = (create_dcm_application(config_db, sfos_exist,
+                                             dcm_only) +
+                      create_pu_apps(config_db))
 
     return templ_apps
 
-def create_hltpu_application(config_db):
+def create_hltrc_application(config_db):
+    """
+    Create an HLTRC application.
+    """
     config_rules = config_db.getObject("ConfigurationRuleBundle",
                                        "DefaultConfigurationRuleBundle")
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
@@ -121,11 +143,24 @@ def create_hltpu_application(config_db):
 
     
 def create_dcm_application(config_db, sfos_exist, standalone):
+    """
+    Create a DCM application object using the arguments to
+    tune its parameters and return a list containing the
+    application.
+
+    Arguments:
+      sfos_exist -- indicates whether there are SFOs
+                    in the farm description (boolean)
+      standalone -- indicates whether this is a DCM only
+                    configuration (boolean)
+      
+    """
     dcm_main = config_db.getObject("Binary", "dcm_main")
 
     config_rules = config_db.getObject("ConfigurationRuleBundle",
                                        "DefaultConfigurationRuleBundle")
-    efio_config = config_db.getObject("EFIOConfiguration", "EFIO-Configuration-1")
+    efio_config = config_db.getObject("EFIOConfiguration",
+                                      "EFIO-Configuration-1")
     dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
 
     #sources
@@ -169,7 +204,15 @@ def create_dcm_application(config_db, sfos_exist, standalone):
 
 def create_aggregator_app(config_db, script_name, default_host,
                           segment_name=""):
-    
+    """
+    Create an aggregator application, either a rack level one
+    or a top-level one and return it.
+
+    Arguments:
+      script_name -- name of the aggregator script
+      default_host -- where the aggregator app should run
+      segment name -- name of segment where it runs(default "" for top level)
+    """
     dal_script_name = os.path.splitext(script_name)[0]
 ##     aggregator_script = dal.Script(dal_script_name)
 ##     aggregator_script.BinaryName = script_name
