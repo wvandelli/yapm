@@ -20,6 +20,16 @@ import imp
 IMPORT_ERROR_MESSAGE = "Couldn't import module provided: %s"
 ATTR_ERROR_MESSAGE = "Couldn't find dictionary with default name(farm_dict) in module provided"
 
+DEFAULT_INCLUDES = ['daq/hw/hosts.data.xml',
+                    'daq/segments/setup.data.xml',
+                    'daq/schema/hltsv.schema.xml',
+                    'daq/schema/HLTMPPU.schema.xml',
+                    'daq/sw/repository.data.xml',
+                    'daq/schema/dcm.schema.xml',
+                    'daq/sw/tags.data.xml',
+                    'daq/sw/common-templates.data.xml'
+                    ]
+
 def get_farm_dict(module_name):
     farm_gen = imp.find_module(module_name)
     farm_gen_mod = imp.load_module(module_name, farm_gen[0], farm_gen[1],
@@ -39,8 +49,8 @@ def create_config_db(args):
         print(ATTR_ERROR_MESSAGE)
         return
 
-    full_includes = yapm.common.DEFAULT_INCLUDES + args.extra_includes
-    config_db = Project(args.partition_name + ".data.xml", full_includes)
+    full_includes = DEFAULT_INCLUDES + args.extra_includes
+    config_db = Project("data/" + args.partition_name + ".data.xml", full_includes)
 
     if args.local:
         local_host = farm_dict['default_host']
@@ -56,14 +66,14 @@ def create_config_db(args):
     for dcm in farm_dict['dcms']:
         dcm['config_db'] = config_db
         dcm['templ_apps'] = templ_apps
-        dcm_segment = yapm.hlt.create_dcm_segment(**dcm)
+        dcm_segment = yapm.hlt.create_hlt_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hlt_segment = (yapm.hltsv.create_hlt_segment(config_db,
-                                                 farm_dict['default_host'],
-                                                 farm_dict['hltsv'],
-                                                 farm_dict['sfos'],
-                                                 hlt_segments))
+    hlt_segment = (yapm.hltsv.create_hltsv_segment(config_db,
+                                                   farm_dict['default_host'],
+                                                   farm_dict['hltsv'],
+                                                   farm_dict['sfos'],
+                                                   hlt_segments))
     part_segments.append(hlt_segment)
     
     part_params = {
