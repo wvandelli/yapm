@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yapm.hltsv &mdash; yapm 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yapm 1.0 documentation" href="index.html" />
+    <link rel="next" title="yapm.hlt" href="hlt.html" />
+    <link rel="prev" title="yapm.common" href="common.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hlt.html" title="yapm.hlt"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="yapm.common"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">yapm 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-yapm.hltsv">
+<span id="yapm-hltsv"></span><h1>yapm.hltsv<a class="headerlink" href="#module-yapm.hltsv" title="Permalink to this headline">¶</a></h1>
+<p>This module creates the DAL component representation of the HLTSV segment
+and all other DAL components which are specific to this segment.</p>
+<dl class="function">
+<dt id="yapm.hltsv.create_hlt_segment">
+<tt class="descclassname">yapm.hltsv.</tt><tt class="descname">create_hlt_segment</tt><big>(</big><em>config_db</em>, <em>default_host</em>, <em>hltsv_host</em>, <em>sfos</em>, <em>hlt_segments</em><big>)</big><a class="reference internal" href="_modules/yapm/hltsv.html#create_hlt_segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.hltsv.create_hlt_segment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a top-level HLT segment and return it.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">config_db &#8211; configuration database</p>
+<dl class="docutils">
+<dt>default_host &#8211; a DAL Computer object serving as the</dt>
+<dd>main host for the segment</dd>
+</dl>
+<p>hltsv_host &#8211; a DAL Computer object to run the HLTSV application</p>
+<p>sfos &#8211; a list of DAL Computer objects to run the SFO applications</p>
+<dl class="last docutils">
+<dt>hlt_segments &#8211; a list of HLT segments to add to this top-level</dt>
+<dd>segment. HLT Segment as returned by:
+yapm.hlt.create_hlt_segment</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.hltsv.create_hltsv_app">
+<tt class="descclassname">yapm.hltsv.</tt><tt class="descname">create_hltsv_app</tt><big>(</big><em>config_db</em>, <em>hltsv_host</em><big>)</big><a class="reference internal" href="_modules/yapm/hltsv.html#create_hltsv_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.hltsv.create_hltsv_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an HLTSV application and return it.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">config_db &#8211; the configuration database</p>
+<p class="last">hltsv_host &#8211; a DAL computer object where the application should run</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.hltsv.create_sfo_application">
+<tt class="descclassname">yapm.hltsv.</tt><tt class="descname">create_sfo_application</tt><big>(</big><em>config_db</em>, <em>number</em>, <em>host</em><big>)</big><a class="reference internal" href="_modules/yapm/hltsv.html#create_sfo_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.hltsv.create_sfo_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an SFO application and return it.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">config_db &#8211; the database under creation</p>
+<p>number &#8211; a unique number identifier for the application</p>
+<p class="last">host &#8211; a DAL computer object where the application should run</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="previous chapter">yapm.common</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hlt.html"
+                        title="next chapter">yapm.hlt</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/hltsv.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hlt.html" title="yapm.hlt"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="yapm.common"
+             >previous</a> |</li>
+        <li><a href="index.html">yapm 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Argyris Zardilis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

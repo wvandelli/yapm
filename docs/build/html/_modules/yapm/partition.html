@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yapm.partition &mdash; yapm 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yapm 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yapm 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yapm.partition</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module creates a dal object representation of a partition and directly</span>
+<span class="sd">related objects(counters etc.)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pm.dal</span> <span class="kn">import</span> <span class="n">dal</span><span class="p">,</span> <span class="n">DFdal</span>
+<span class="kn">from</span> <span class="nn">pm.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+<span class="n">TAGS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;x86_64-slc6-gcc47-opt&#39;</span><span class="p">,</span>
+        <span class="s">&#39;x86_64-slc6-gcc47-dbg&#39;</span><span class="p">,</span>
+        <span class="s">&#39;x86_64-slc5-gcc47-opt&#39;</span><span class="p">,</span>
+        <span class="s">&#39;x86_64-slc5-gcc47-dbg&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="create_counters"><a class="viewcode-back" href="../../partition.html#yapm.partition.create_counters">[docs]</a><span class="k">def</span> <span class="nf">create_counters</span><span class="p">(</span><span class="n">config_db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the counters object to be used in the Igui display and return it.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l1_rates</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">IS_EventsAndRates</span><span class="p">(</span><span class="s">&quot;L1_counters&quot;</span><span class="p">)</span>
+    <span class="n">l1_rates</span><span class="o">.</span><span class="n">EventCounter</span> <span class="o">=</span> <span class="s">&quot;DF.HLTSV.Events.LVL1Events&quot;</span>
+    <span class="n">l1_rates</span><span class="o">.</span><span class="n">Rate</span> <span class="o">=</span> <span class="s">&quot;DF.HLTSV.Events.Rate&quot;</span>
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">l1_rates</span><span class="p">])</span>
+    <span class="n">l2_rates</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">IS_EventsAndRates</span><span class="p">(</span><span class="s">&quot;L2_counters&quot;</span><span class="p">)</span>
+    <span class="n">l2_rates</span><span class="o">.</span><span class="n">EventCounter</span> <span class="o">=</span> <span class="s">&quot;DF.DCM-top_aggregator.DCM.top.sum.ProxL1Events&quot;</span>
+    <span class="n">l2_rates</span><span class="o">.</span><span class="n">Rate</span> <span class="o">=</span> <span class="s">&quot;DF.DCM_summary_DF_top_sum.L1Rate&quot;</span>
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">l2_rates</span><span class="p">])</span>
+    <span class="n">eb_rates</span> <span class="o">=</span> <span class="p">(</span><span class="n">dal</span><span class="o">.</span><span class="n">IS_EventsAndRates</span>
+                <span class="p">(</span><span class="s">&quot;DF.DCM-top_aggregator.DCM.top.sum.EB_counters&quot;</span><span class="p">))</span>
+    <span class="n">eb_rates</span><span class="o">.</span><span class="n">Rate</span> <span class="o">=</span> <span class="s">&quot;DF.DCM-top_aggregator.DCM.top.sum.EbRate&quot;</span>
+    <span class="n">eb_rates</span><span class="o">.</span><span class="n">EventCounter</span> <span class="o">=</span> <span class="s">&quot;DF.DCM-top_aggregator.DCM.top.sum.EbEvents&quot;</span>
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">eb_rates</span><span class="p">])</span>
+    <span class="n">ef_rates</span> <span class="o">=</span> <span class="p">(</span><span class="n">dal</span><span class="o">.</span><span class="n">IS_EventsAndRates</span>
+                <span class="p">(</span><span class="s">&quot;DF.DCM-top_aggregator.DCM.top.sum.EF_counters&quot;</span><span class="p">))</span>
+    <span class="n">ef_rates</span><span class="o">.</span><span class="n">Rate</span> <span class="o">=</span> <span class="s">&quot;DF.DCM-top_aggregator.DCM.top.sum.OutRate&quot;</span>
+    <span class="n">ef_rates</span><span class="o">.</span><span class="n">EventCounter</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">ef_rates</span><span class="p">])</span>
+
+    <span class="n">daq_counters</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">IS_InformationSources</span><span class="p">(</span><span class="s">&quot;DAQ_Counters&quot;</span><span class="p">)</span>
+    <span class="n">daq_counters</span><span class="o">.</span><span class="n">LVL1</span> <span class="o">=</span> <span class="n">l1_rates</span>
+    <span class="n">daq_counters</span><span class="o">.</span><span class="n">LVL2</span> <span class="o">=</span> <span class="n">l2_rates</span>
+    <span class="n">daq_counters</span><span class="o">.</span><span class="n">EB</span> <span class="o">=</span> <span class="n">eb_rates</span>
+    <span class="n">daq_counters</span><span class="o">.</span><span class="n">EF</span> <span class="o">=</span> <span class="n">ef_rates</span>
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">daq_counters</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">daq_counters</span>
+</div>
+<div class="viewcode-block" id="create_partition"><a class="viewcode-back" href="../../partition.html#yapm.partition.create_partition">[docs]</a><span class="k">def</span> <span class="nf">create_partition</span><span class="p">(</span><span class="o">**</span><span class="n">part_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create partition object and return it.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">      config_db -- configuration database</span>
+<span class="sd">      </span>
+<span class="sd">      part_name -- name of the partition</span>
+<span class="sd">      </span>
+<span class="sd">      repository_root -- path to be used as repository root</span>
+<span class="sd">      </span>
+<span class="sd">      segments -- list of DAL segments to be added to the partition</span>
+<span class="sd">      </span>
+<span class="sd">      data_networks -- addresses of the networks to be used</span>
+<span class="sd">      </span>
+<span class="sd">      multicast_address -- address to be used as multicast address</span>
+<span class="sd">      </span>
+<span class="sd">      default_host -- a DAL Computer object serving as the</span>
+<span class="sd">                      main host for the partition</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config_db</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;config_db&#39;</span><span class="p">]</span>
+    <span class="n">partition</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">Partition</span><span class="p">(</span><span class="n">part_args</span><span class="p">[</span><span class="s">&#39;part_name&#39;</span><span class="p">])</span>
+
+    <span class="n">partition</span><span class="o">.</span><span class="n">RepositoryRoot</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;repository_root&#39;</span><span class="p">]</span>
+
+    <span class="n">partition</span><span class="o">.</span><span class="n">Segments</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;segments&#39;</span><span class="p">]</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">OnlineInfrastructure</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;OnlineSegment&quot;</span><span class="p">,</span>
+                                                         <span class="s">&quot;setup&quot;</span><span class="p">)</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">LogRoot</span> <span class="o">=</span> <span class="s">&#39;/logs/${TDAQ_VERSION}&#39;</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">WorkingDirectory</span> <span class="o">=</span> <span class="s">&#39;/logs&#39;</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">RepositoryRoot</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;repository_root&#39;</span><span class="p">]</span>
+
+    <span class="c">#DF parameters</span>
+    <span class="n">df_parameters</span> <span class="o">=</span> <span class="n">DFdal</span><span class="o">.</span><span class="n">DFParameters</span><span class="p">(</span><span class="s">&quot;DataFlow&quot;</span><span class="p">)</span>
+
+    <span class="n">df_parameters</span><span class="o">.</span><span class="n">MulticastAddress</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;multicast_address&#39;</span><span class="p">]</span>
+    <span class="n">df_parameters</span><span class="o">.</span><span class="n">DefaultDataNetworks</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;data_networks&#39;</span><span class="p">]</span>
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">df_parameters</span><span class="p">])</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">DataFlowParameters</span> <span class="o">=</span> <span class="n">df_parameters</span>
+
+    <span class="n">common_params</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;VariableSet&quot;</span><span class="p">,</span> <span class="s">&quot;CommonParameters&quot;</span><span class="p">)</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">Parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">common_params</span><span class="p">)</span>
+    <span class="n">external_params</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;VariableSet&quot;</span><span class="p">,</span> <span class="s">&quot;External-parameters&quot;</span><span class="p">)</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">Parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">external_params</span><span class="p">)</span>
+
+    <span class="n">common_env</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;VariableSet&quot;</span><span class="p">,</span> <span class="s">&quot;CommonEnvironment&quot;</span><span class="p">)</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">ProcessEnvironment</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">common_env</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">tag_name</span> <span class="ow">in</span> <span class="n">TAGS</span><span class="p">:</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Tag&quot;</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">)</span>
+        <span class="n">partition</span><span class="o">.</span><span class="n">DefaultTags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+    <span class="n">partition</span><span class="o">.</span><span class="n">DefaultHost</span> <span class="o">=</span> <span class="n">part_args</span><span class="p">[</span><span class="s">&#39;default_host&#39;</span><span class="p">]</span>
+
+    <span class="n">daq_counters</span> <span class="o">=</span> <span class="n">create_counters</span><span class="p">(</span><span class="n">config_db</span><span class="p">)</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">IS_InformationSource</span> <span class="o">=</span> <span class="n">daq_counters</span>
+    
+    <span class="n">pu_config_db</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s">&quot;PuDummy.data.xml&quot;</span><span class="p">)</span>
+    <span class="n">trig_config</span> <span class="o">=</span> <span class="n">pu_config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;TriggerConfiguration&quot;</span><span class="p">,</span> <span class="s">&quot;TrigConf-1&quot;</span><span class="p">)</span>
+    <span class="n">partition</span><span class="o">.</span><span class="n">TriggerConfiguration</span> <span class="o">=</span> <span class="n">trig_config</span>
+
+
+    <span class="n">config_db</span><span class="o">.</span><span class="n">updateObjects</span><span class="p">([</span><span class="n">partition</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">partition</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yapm 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Argyris Zardilis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

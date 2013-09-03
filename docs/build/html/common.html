@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yapm.common &mdash; yapm 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yapm 1.0 documentation" href="index.html" />
+    <link rel="next" title="yapm.hltsv" href="hltsv.html" />
+    <link rel="prev" title="Welcome to yapm’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hltsv.html" title="yapm.hltsv"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to yapm’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">yapm 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-yapm.common">
+<span id="yapm-common"></span><h1>yapm.common<a class="headerlink" href="#module-yapm.common" title="Permalink to this headline">¶</a></h1>
+<p>This module creates all the common DAL objects that are needed by more than one
+segment or they are created only once but their container segments are created
+multiple times(template/aggregator applications)</p>
+<dl class="function">
+<dt id="yapm.common.create_aggregator_app">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_aggregator_app</tt><big>(</big><em>config_db</em>, <em>script_name</em>, <em>default_host</em>, <em>segment_name=''</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_aggregator_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_aggregator_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an aggregator application, either a rack level one
+or a top-level one and return it.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">script_name &#8211; name of the aggregator script</p>
+<p>default_host &#8211; where the aggregator app should run</p>
+<p class="last">segment name &#8211; name of segment where it runs(default &#8220;&#8221; for top level)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.common.create_config_rules">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_config_rules</tt><big>(</big><em>config_db</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_config_rules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_config_rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the default publishing configuration and the efio
+configuration that are used by multiple segments/objects
+and add them to the database so they can be accessed when
+needed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.common.create_dcm_application">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_dcm_application</tt><big>(</big><em>config_db</em>, <em>sfos_exist</em>, <em>standalone</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_dcm_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_dcm_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DCM application object using the arguments to
+tune its parameters and return a list containing the
+application.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><dl class="first last docutils">
+<dt>sfos_exist &#8211; indicates whether there are SFOs</dt>
+<dd>in the farm description (boolean)</dd>
+<dt>standalone &#8211; indicates whether this is a DCM only</dt>
+<dd>configuration (boolean)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.common.create_hltmppu_template">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_hltmppu_template</tt><big>(</big><em>config_db</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_hltmppu_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_hltmppu_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the HLTMPPU template application and return it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.common.create_hltrc_application">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_hltrc_application</tt><big>(</big><em>config_db</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_hltrc_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_hltrc_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an HLTRC application.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.common.create_pu_apps">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_pu_apps</tt><big>(</big><em>config_db</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_pu_apps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_pu_apps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the HLTMPPU template and the HLTRC application and
+return a list containing them.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.common.create_template_applications">
+<tt class="descclassname">yapm.common.</tt><tt class="descname">create_template_applications</tt><big>(</big><em>config_db</em>, <em>dcm_only</em>, <em>hltpu_only</em>, <em>sfos_exist</em><big>)</big><a class="reference internal" href="_modules/yapm/common.html#create_template_applications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.common.create_template_applications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the template applications for the HLT Segment(s) and return
+a list containing them to be used directly as input to the
+TemplateApplications relation of an HLT Segment.  The arguments
+serve as directives to know which applications to create and for
+their internal parameter tuning.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><dl class="first last docutils">
+<dt>dcm_only &#8211; indicates whether this is a DCM only</dt>
+<dd>configuration (boolean)</dd>
+<dt>hltpu_only &#8211; indicates whether this is</dt>
+<dd>a PU only configuration (boolean)</dd>
+<dt>sfos_exist &#8211; indicates whether there are SFOs</dt>
+<dd>in the farm description (boolean)</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>A list containing the template applications created based
+on the arguments given to the function.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to yapm&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hltsv.html"
+                        title="next chapter">yapm.hltsv</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/common.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hltsv.html" title="yapm.hltsv"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to yapm’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">yapm 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Argyris Zardilis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
