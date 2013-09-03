@@ -7,7 +7,7 @@ from farm_utils import dcm_segment, partition, get_hosts
 from pprint import pprint
 
 #create 2 dcm segments
-testbed_hosts = get_hosts(['hosts.data.xml'])
+testbed_hosts = get_hosts(['daq/hw/hosts.data.xml'])
 dcm1_hosts = pm.farm.subselect_pattern(testbed_hosts,
                                        'pc-tbed-r3-[%02d-%02d]' % (1,10))
 dcm2_hosts = pm.farm.subselect_pattern(testbed_hosts,
@@ -15,7 +15,7 @@ dcm2_hosts = pm.farm.subselect_pattern(testbed_hosts,
 
 dcm_racks = [sorted(dcm1_hosts.values()), sorted(dcm2_hosts.values())]
 dcm_segments = []
-for idx, rack in enumerate(dcm_racks):
+for idx, rack in zip(range(1, len(dcm_racks)+1), dcm_racks):
     worker_nodes = rack[0:-1]
     service_node = rack[-1]
     dcm_segments.append(dcm_segment("HLT-Segment-%02d" % idx, service_node,
