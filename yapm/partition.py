@@ -41,7 +41,7 @@ def create_counters(config_db):
     daq_counters.LVL2 = l2_rates
     daq_counters.EB = eb_rates
     daq_counters.EF = ef_rates
-    config_db.updateObjects([daq_counters])
+    
     return daq_counters
 
 def create_partition(**part_args):
@@ -106,6 +106,4 @@ def create_partition(**part_args):
     trig_config = pu_config_db.getObject("TriggerConfiguration", "TrigConf-1")
     partition.TriggerConfiguration = trig_config
 
-
-    config_db.updateObjects([partition])
     return partition
