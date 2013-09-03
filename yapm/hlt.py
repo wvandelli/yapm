@@ -13,17 +13,24 @@ def create_hlt_segment(**dcm_args):
 
     Keyword arguments:
       name -- name of the segment
+      
       default_host -- a DAL Computer object serving as the
                       main host for the segment
+                      
       hosts -- worker hosts(DAL Computer objects) where the apps should run
+      
       is_resource -- where the IS info from segment apps
                      are published(DAL Computer object)
+                     
       is_histogram -- where the histogram from segment apps
                       are published(DAL Computer object)
+                      
       config_db -- the configuration database
+      
       templ_apps -- the template application to run on the worker nodes
                     of the segment as returned by:
                     yapm.common.create_template_applications
+                    
     """
     config_db = dcm_args['config_db']
     name = dcm_args['name']

@@ -15,6 +15,7 @@ TAGS = ['x86_64-slc6-gcc47-opt',
 def create_counters(config_db):
     """
     Create the counters object to be used in the Igui display and return it.
+    
     """
     l1_rates = dal.IS_EventsAndRates("L1_counters")
     l1_rates.EventCounter = "DF.HLTSV.Events.LVL1Events"
@@ -49,11 +50,17 @@ def create_partition(**part_args):
 
     Keyword Arguments:
       config_db -- configuration database
+      
       part_name -- name of the partition
+      
       repository_root -- path to be used as repository root
+      
       segments -- list of DAL segments to be added to the partition
+      
       data_networks -- addresses of the networks to be used
+      
       multicast_address -- address to be used as multicast address
+      
       default_host -- a DAL Computer object serving as the
                       main host for the partition
 

@@ -13,7 +13,9 @@ def create_sfo_application(config_db, number, host):
 
     Arguments:
       config_db -- the database under creation
+      
       number -- a unique number identifier for the application
+      
       host -- a DAL computer object where the application should run
 
     """
@@ -62,7 +64,9 @@ def create_hltsv_app(config_db, hltsv_host):
 
     Arguments:
       config_db -- the configuration database
+      
       hltsv_host -- a DAL computer object where the application should run
+      
     """
     config_rules = config_db.getObject("ConfigurationRuleBundle",
                                        "DefaultConfigurationRuleBundle")
@@ -87,8 +91,10 @@ def create_hlt_segment(config_db, default_host, hltsv_host, sfos, hlt_segments):
 
     Arguments:
       config_db -- configuration database
+      
       default_host -- a DAL Computer object serving as the
                       main host for the segment
+                      
       hltsv_host -- a DAL Computer object to run the HLTSV application
 
       sfos -- a list of DAL Computer objects to run the SFO applications
