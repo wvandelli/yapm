@@ -214,18 +214,18 @@ def create_aggregator_app(config_db, script_name, default_host,
       segment name -- name of segment where it runs(default "" for top level)
     """
     dal_script_name = os.path.splitext(script_name)[0]
-##     aggregator_script = dal.Script(dal_script_name)
-##     aggregator_script.BinaryName = script_name
-##     repository = config_db.getObject("SW_Repository", "Online")
-##     aggregator_script.BelongsTo = repository
-##     config_db.updateObjects([aggregator_script])
+    aggregator_script = dal.Script(dal_script_name)
+    aggregator_script.BinaryName = script_name
+    repository = config_db.getObject("SW_Repository", "Online")
+    aggregator_script.BelongsTo = repository
+    #config_db.updateObjects([aggregator_script])
     
     if not segment_name == "":
-        aggregator_script = config_db.getObject("Script", "aggregator")
+        #aggregator_script = config_db.getObject("Script", "aggregator")
         aggregator_app = dal.Application("DCM-" + aggregator_script.id + "-" +
                                          segment_name)
     else:
-        aggregator_script = config_db.getObject("Script", "top_aggregator")
+        #aggregator_script = config_db.getObject("Script", "top_aggregator")
         aggregator_app = dal.Application("DCM-" + aggregator_script.id)
     aggregator_app.Program = aggregator_script
     aggregator_app.RunsOn = default_host
