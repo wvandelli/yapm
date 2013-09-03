@@ -81,7 +81,7 @@ def create_hltsv_app(config_db, hltsv_host):
     
     return hltsv_app
 
-def create_hlt_segment(config_db, default_host, hltsv_host, sfos, hlt_segments):
+def create_hltsv_segment(config_db, default_host, hltsv_host, sfos, hlt_segments):
     """
     Create a top-level HLT segment and return it.
 
