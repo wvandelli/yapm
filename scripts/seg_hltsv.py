@@ -49,7 +49,7 @@ def create_config_db(args):
     except ImportError:
         print(IMPORT_ERROR_MESSAGE % args.farm_file)
         return
-    except AttributeError:
+    except NameError:
         print(ATTR_ERROR_MESSAGE)
         return
     #farm_dict = get_farm_dict(args.farm_file)
