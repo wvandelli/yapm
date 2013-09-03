@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yapm.hltsv &mdash; yapm 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yapm 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yapm 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yapm.hltsv</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module creates the DAL component representation of the HLTSV segment</span>
+<span class="sd">and all other DAL components which are specific to this segment.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pm.dal</span> <span class="kn">import</span> <span class="n">dal</span><span class="p">,</span> <span class="n">DFdal</span>
+<span class="kn">from</span> <span class="nn">config.dal</span> <span class="kn">import</span> <span class="n">module</span> <span class="k">as</span> <span class="n">dal_module</span>
+<span class="kn">from</span> <span class="nn">common</span> <span class="kn">import</span> <span class="n">create_aggregator_app</span>
+
+<div class="viewcode-block" id="create_sfo_application"><a class="viewcode-back" href="../../hltsv.html#yapm.hltsv.create_sfo_application">[docs]</a><span class="k">def</span> <span class="nf">create_sfo_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an SFO application and return it.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      config_db -- the database under creation</span>
+<span class="sd">      </span>
+<span class="sd">      number -- a unique number identifier for the application</span>
+<span class="sd">      </span>
+<span class="sd">      host -- a DAL computer object where the application should run</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">efio_config</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;EFIOConfiguration&quot;</span><span class="p">,</span> <span class="s">&quot;EFIO-Configuration-1&quot;</span><span class="p">)</span>
+    <span class="c">#first create the app configuration</span>
+    <span class="n">sfo_config</span> <span class="o">=</span> <span class="n">DFdal</span><span class="o">.</span><span class="n">SFOConfiguration</span><span class="p">(</span><span class="s">&quot;SFO-Configuration-&quot;</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">BufferSize_kB</span> <span class="o">=</span> <span class="mi">10240</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">DataRecordingEnabled</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">LumiBlockEnabled</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">DirectoriesToWriteData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;/tmp&quot;</span><span class="p">)</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">DirectoryWritingTime</span> <span class="o">=</span> <span class="mi">60</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">DirectoryChangeTime</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">DirectoryToWriteIndex</span> <span class="o">=</span> <span class="s">&quot;/tmp&quot;</span>
+    <span class="n">sfo_config</span><span class="o">.</span><span class="n">EFIOConfiguration</span> <span class="o">=</span> <span class="n">efio_config</span>
+
+    <span class="c">#now create the application itself</span>
+    <span class="n">sfo_app</span> <span class="o">=</span> <span class="n">DFdal</span><span class="o">.</span><span class="n">SFOApplication</span><span class="p">(</span><span class="s">&quot;SFO-&quot;</span><span class="o">+</span><span class="n">number</span><span class="p">)</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">ActionTimeout</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">IfError</span> <span class="o">=</span> <span class="s">&quot;Restart&quot;</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">RestartableDuringRun</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">IfDies</span> <span class="o">=</span> <span class="s">&quot;Restart&quot;</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">RunsOn</span> <span class="o">=</span> <span class="n">host</span>
+    <span class="n">sfo_binary</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Binary&quot;</span><span class="p">,</span> <span class="s">&quot;SFOng_main&quot;</span><span class="p">)</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">Program</span> <span class="o">=</span> <span class="n">sfo_binary</span>
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">SFOConfiguration</span> <span class="o">=</span> <span class="n">sfo_config</span>
+
+    <span class="n">dcm_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;is_dal&quot;</span><span class="p">,</span> <span class="s">&#39;daq/schema/dcm.schema.xml&#39;</span><span class="p">)</span>
+    <span class="n">dc_is_resource</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DC_ISResourceUpdate</span><span class="p">(</span><span class="s">&quot;DCAppConf-&quot;</span> <span class="o">+</span> <span class="n">number</span> <span class="o">+</span>
+                                                 <span class="s">&quot;-ISResourceUpdate-SFO&quot;</span><span class="p">)</span>
+    <span class="n">dc_is_resource</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;SFO&quot;</span>
+    <span class="n">dc_is_resource</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">dc_is_resource</span><span class="o">.</span><span class="n">activeOnNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;SFO&quot;</span><span class="p">)</span>
+
+    <span class="n">dc_app_config</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DCApplicationConfig</span><span class="p">(</span><span class="s">&quot;DCAppConfig-&quot;</span><span class="o">+</span><span class="n">number</span><span class="p">)</span>
+    <span class="n">dc_app_config</span><span class="o">.</span><span class="n">ISDefaultRsrcUpdateInterval</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">dc_app_config</span><span class="o">.</span><span class="n">ISDefaultServer</span> <span class="o">=</span> <span class="s">&quot;*DF&quot;</span>
+    <span class="n">dc_app_config</span><span class="o">.</span><span class="n">refDC_ISResourceUpdate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dc_is_resource</span><span class="p">)</span>
+
+    <span class="n">sfo_app</span><span class="o">.</span><span class="n">DFApplicationConfig</span> <span class="o">=</span> <span class="n">dc_app_config</span>
+    
+    <span class="k">return</span> <span class="n">sfo_app</span>
+</div>
+<div class="viewcode-block" id="create_hltsv_app"><a class="viewcode-back" href="../../hltsv.html#yapm.hltsv.create_hltsv_app">[docs]</a><span class="k">def</span> <span class="nf">create_hltsv_app</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">hltsv_host</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an HLTSV application and return it.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      config_db -- the configuration database</span>
+<span class="sd">      </span>
+<span class="sd">      hltsv_host -- a DAL computer object where the application should run</span>
+<span class="sd">      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config_rules</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;ConfigurationRuleBundle&quot;</span><span class="p">,</span>
+                                       <span class="s">&quot;DefaultConfigurationRuleBundle&quot;</span><span class="p">)</span>
+    <span class="n">hltsv_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;hltsv_dal&quot;</span><span class="p">,</span> <span class="s">&#39;daq/schema/hltsv.schema.xml&#39;</span><span class="p">)</span>
+    
+    <span class="n">roib_plugin</span> <span class="o">=</span> <span class="n">hltsv_dal</span><span class="o">.</span><span class="n">RoIBPluginInternal</span><span class="p">(</span><span class="s">&quot;plugin_internal&quot;</span><span class="p">)</span>
+    <span class="n">roib_plugin</span><span class="o">.</span><span class="n">Libraries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;libsvl1internal&quot;</span><span class="p">)</span>
+
+    <span class="n">hltsv_main</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Binary&quot;</span><span class="p">,</span> <span class="s">&quot;hltsv_main&quot;</span><span class="p">)</span>
+    
+    <span class="n">hltsv_app</span> <span class="o">=</span> <span class="n">hltsv_dal</span><span class="o">.</span><span class="n">HLTSVApplication</span><span class="p">(</span><span class="s">&quot;HLTSV&quot;</span><span class="p">)</span>
+    <span class="n">hltsv_app</span><span class="o">.</span><span class="n">ConfigurationRules</span> <span class="o">=</span> <span class="n">config_rules</span>
+    <span class="n">hltsv_app</span><span class="o">.</span><span class="n">RoIBInput</span> <span class="o">=</span> <span class="n">roib_plugin</span>
+    <span class="n">hltsv_app</span><span class="o">.</span><span class="n">Program</span> <span class="o">=</span> <span class="n">hltsv_main</span>
+    <span class="n">hltsv_app</span><span class="o">.</span><span class="n">RunsOn</span> <span class="o">=</span> <span class="n">hltsv_host</span>
+    
+    <span class="k">return</span> <span class="n">hltsv_app</span>
+</div>
+<div class="viewcode-block" id="create_hlt_segment"><a class="viewcode-back" href="../../hltsv.html#yapm.hltsv.create_hlt_segment">[docs]</a><span class="k">def</span> <span class="nf">create_hlt_segment</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">default_host</span><span class="p">,</span> <span class="n">hltsv_host</span><span class="p">,</span> <span class="n">sfos</span><span class="p">,</span> <span class="n">hlt_segments</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a top-level HLT segment and return it.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      config_db -- configuration database</span>
+<span class="sd">      </span>
+<span class="sd">      default_host -- a DAL Computer object serving as the</span>
+<span class="sd">                      main host for the segment</span>
+<span class="sd">                      </span>
+<span class="sd">      hltsv_host -- a DAL Computer object to run the HLTSV application</span>
+
+<span class="sd">      sfos -- a list of DAL Computer objects to run the SFO applications</span>
+
+<span class="sd">      hlt_segments -- a list of HLT segments to add to this top-level</span>
+<span class="sd">                      segment. HLT Segment as returned by:</span>
+<span class="sd">                      yapm.hlt.create_hlt_segment</span>
+<span class="sd">                      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config_rules</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;ConfigurationRuleBundle&quot;</span><span class="p">,</span>
+                                       <span class="s">&quot;DefaultConfigurationRuleBundle&quot;</span><span class="p">)</span>
+    <span class="n">efio_config</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;EFIOConfiguration&quot;</span><span class="p">,</span> <span class="s">&quot;EFIO-Configuration-1&quot;</span><span class="p">)</span>
+    <span class="n">hltsv_segment</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">Segment</span><span class="p">(</span><span class="s">&quot;HLT&quot;</span><span class="p">)</span>
+    <span class="n">defrc_controller</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;RunControlTemplateApplication&quot;</span><span class="p">,</span>
+                                           <span class="s">&quot;DefRC&quot;</span><span class="p">)</span>
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">IsControlledBy</span> <span class="o">=</span> <span class="n">defrc_controller</span>
+    <span class="n">hltsv_app</span> <span class="o">=</span> <span class="n">create_hltsv_app</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">hltsv_host</span><span class="p">)</span>
+
+    <span class="n">sfo_apps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">sfo_host</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sfos</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">sfos</span><span class="p">):</span>
+        <span class="n">sfo_application</span> <span class="o">=</span> <span class="n">create_sfo_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">),</span>
+                                                 <span class="n">sfo_host</span><span class="p">)</span>
+        <span class="n">sfo_apps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sfo_application</span><span class="p">)</span>
+        
+    <span class="n">hltsv_resources</span> <span class="o">=</span> <span class="p">[</span><span class="n">hltsv_app</span><span class="p">]</span> <span class="o">+</span> <span class="n">sfo_apps</span>
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">Resources</span> <span class="o">=</span> <span class="n">hltsv_resources</span>
+
+    <span class="n">top_aggregator_app</span> <span class="o">=</span> <span class="n">create_aggregator_app</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="s">&quot;top_aggregator.py&quot;</span><span class="p">,</span>
+                                               <span class="n">default_host</span><span class="p">)</span>
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">Applications</span> <span class="o">=</span> <span class="p">[</span><span class="n">top_aggregator_app</span><span class="p">]</span>
+
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">DefaultHost</span> <span class="o">=</span> <span class="n">default_host</span>
+
+    <span class="c">#infrastructure applications</span>
+    <span class="n">is_server</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;InfrastructureTemplateApplication&quot;</span><span class="p">,</span>
+                                    <span class="s">&quot;DF_IS&quot;</span><span class="p">)</span>
+    <span class="n">oh_server</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;InfrastructureTemplateApplication&quot;</span><span class="p">,</span>
+                                    <span class="s">&quot;DF_Histogramming&quot;</span><span class="p">)</span>
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">Infrastructure</span> <span class="o">=</span> <span class="p">[</span><span class="n">is_server</span><span class="p">,</span> <span class="n">oh_server</span><span class="p">]</span>
+    
+    <span class="c">#Resources</span>
+    <span class="n">mon_is</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;MIGApplication&quot;</span><span class="p">,</span> <span class="s">&quot;TopMIG-IS&quot;</span><span class="p">)</span>
+    <span class="n">mon_oh</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;MIGApplication&quot;</span><span class="p">,</span> <span class="s">&quot;TopMIG-OH&quot;</span><span class="p">)</span>
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">Resources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mon_is</span><span class="p">)</span>
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">Resources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mon_oh</span><span class="p">)</span>
+
+    <span class="n">hltsv_segment</span><span class="o">.</span><span class="n">Segments</span> <span class="o">=</span> <span class="n">hlt_segments</span>
+        
+    <span class="k">return</span> <span class="n">hltsv_segment</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yapm 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Argyris Zardilis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

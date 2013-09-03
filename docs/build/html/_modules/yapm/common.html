@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yapm.common &mdash; yapm 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yapm 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yapm 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yapm.common</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module creates all the common DAL objects that are needed by more than one</span>
+<span class="sd">segment or they are created only once but their container segments are created</span>
+<span class="sd">multiple times(template/aggregator applications)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pm.dal</span> <span class="kn">import</span> <span class="n">dal</span>
+<span class="kn">from</span> <span class="nn">config.dal</span> <span class="kn">import</span> <span class="n">module</span> <span class="k">as</span> <span class="n">dal_module</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">DEFAULT_INCLUDES</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;/daq/hw/hosts.data.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/segments/setup.data.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/schema/hltsv.schema.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/schema/HLTMPPU.schema.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/sw/repository.data.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/schema/dcm.schema.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/sw/tags.data.xml&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;daq/sw/common-templates.data.xml&#39;</span>
+                    <span class="p">]</span>
+
+<div class="viewcode-block" id="create_config_rules"><a class="viewcode-back" href="../../common.html#yapm.common.create_config_rules">[docs]</a><span class="k">def</span> <span class="nf">create_config_rules</span><span class="p">(</span><span class="n">config_db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the default publishing configuration and the efio</span>
+<span class="sd">    configuration that are used by multiple segments/objects</span>
+<span class="sd">    and add them to the database so they can be accessed when</span>
+<span class="sd">    needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">is_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;is_dal&quot;</span><span class="p">,</span> <span class="s">&#39;daq/schema/dcm.schema.xml&#39;</span><span class="p">)</span>
+    <span class="n">dcm_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;is_dal&quot;</span><span class="p">,</span> <span class="s">&#39;daq/schema/dcm.schema.xml&#39;</span><span class="p">)</span>
+
+    <span class="n">default_is_publishing</span> <span class="o">=</span> <span class="p">(</span><span class="n">is_dal</span><span class="o">.</span><span class="n">ISPublishingParameters</span>
+                             <span class="p">(</span><span class="s">&quot;DefaulISpublishingParameters&quot;</span><span class="p">))</span>
+    <span class="n">default_is_publishing</span><span class="o">.</span><span class="n">PublishInterval</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">default_is_publishing</span><span class="o">.</span><span class="n">ISServer</span> <span class="o">=</span> <span class="s">&quot;${TDAQ_IS_SERVER=DF}&quot;</span>
+
+    <span class="n">default_oh_publishing</span> <span class="o">=</span> <span class="p">(</span><span class="n">is_dal</span><span class="o">.</span><span class="n">OHPublishingParameters</span>
+                             <span class="p">(</span><span class="s">&quot;DefaulOHpublishingParameters&quot;</span><span class="p">))</span>
+    <span class="n">default_oh_publishing</span><span class="o">.</span><span class="n">PublishInterval</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">default_oh_publishing</span><span class="o">.</span><span class="n">OHServer</span> <span class="o">=</span> <span class="s">&quot;${TDAQ_OH_SERVER=Histogramming}&quot;</span>
+    <span class="n">default_oh_publishing</span><span class="o">.</span><span class="n">ROOTProvider</span> <span class="o">=</span> <span class="s">&quot;${TDAQ_APPLICATION_NAME}&quot;</span>
+
+    <span class="n">is_config_rule</span> <span class="o">=</span> <span class="n">is_dal</span><span class="o">.</span><span class="n">ConfigurationRule</span><span class="p">(</span><span class="s">&quot;DefaultISRule&quot;</span><span class="p">)</span>
+    <span class="n">is_config_rule</span><span class="o">.</span><span class="n">Parameters</span> <span class="o">=</span> <span class="n">default_is_publishing</span>
+
+    <span class="n">oh_config_rule</span> <span class="o">=</span> <span class="n">is_dal</span><span class="o">.</span><span class="n">ConfigurationRule</span><span class="p">(</span><span class="s">&quot;DefaultOHRule&quot;</span><span class="p">)</span>
+    <span class="n">oh_config_rule</span><span class="o">.</span><span class="n">Parameters</span> <span class="o">=</span> <span class="n">default_oh_publishing</span>
+
+    <span class="n">def_config_rules</span> <span class="o">=</span> <span class="p">(</span><span class="n">is_dal</span><span class="o">.</span><span class="n">ConfigurationRuleBundle</span>
+                        <span class="p">(</span><span class="s">&quot;DefaultConfigurationRuleBundle&quot;</span><span class="p">))</span>
+    <span class="n">def_config_rules</span><span class="o">.</span><span class="n">Rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oh_config_rule</span><span class="p">)</span>
+    <span class="n">def_config_rules</span><span class="o">.</span><span class="n">Rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">is_config_rule</span><span class="p">)</span>
+
+    <span class="n">efio_config</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">EFIOConfiguration</span><span class="p">(</span><span class="s">&quot;EFIO-Configuration-1&quot;</span><span class="p">)</span>
+    <span class="n">efio_config</span><span class="o">.</span><span class="n">MaxEFIOHandlers</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">efio_config</span><span class="o">.</span><span class="n">SFI_EFD_AckTimeout_ms</span> <span class="o">=</span> <span class="mi">5000</span>
+    <span class="n">efio_config</span><span class="o">.</span><span class="n">EFD_SFO_RcvTimeout_ms</span> <span class="o">=</span> <span class="mi">5000</span>
+    <span class="n">efio_config</span><span class="o">.</span><span class="n">HiddenParams</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;DelayConnect_s=2&quot;</span><span class="p">)</span>
+    <span class="n">efio_config</span><span class="o">.</span><span class="n">NetMask</span> <span class="o">=</span> <span class="s">&quot;10.148.0.0/16&quot;</span>
+    
+    <span class="n">config_db</span><span class="o">.</span><span class="n">addObjects</span><span class="p">([</span><span class="n">def_config_rules</span><span class="p">,</span> <span class="n">efio_config</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="create_pu_apps"><a class="viewcode-back" href="../../common.html#yapm.common.create_pu_apps">[docs]</a><span class="k">def</span> <span class="nf">create_pu_apps</span><span class="p">(</span><span class="n">config_db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the HLTMPPU template and the HLTRC application and</span>
+<span class="sd">    return a list containing them.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hltmppu_template</span> <span class="o">=</span> <span class="n">create_hltmppu_template</span><span class="p">(</span><span class="n">config_db</span><span class="p">)</span>
+    <span class="n">hltrc_app</span> <span class="o">=</span> <span class="n">create_hltrc_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">hltmppu_template</span><span class="p">,</span> <span class="n">hltrc_app</span><span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="create_hltmppu_template"><a class="viewcode-back" href="../../common.html#yapm.common.create_hltmppu_template">[docs]</a><span class="k">def</span> <span class="nf">create_hltmppu_template</span><span class="p">(</span><span class="n">config_db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the HLTMPPU template application and return it.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hltpu_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;hltpu_dal&quot;</span><span class="p">,</span> <span class="s">&quot;daq/schema/HLTMPPU.schema.xml&quot;</span><span class="p">)</span>
+    <span class="n">app_parameters</span> <span class="o">=</span> <span class="s">&quot;-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so&quot;</span>
+    <span class="n">hltmppu_template</span> <span class="o">=</span> <span class="n">hltpu_dal</span><span class="o">.</span><span class="n">HLTMPPUApplication</span><span class="p">(</span><span class="s">&quot;HLTMPPU-Template&quot;</span><span class="p">)</span>
+    <span class="n">hltmppu_template</span><span class="o">.</span><span class="n">Parameters</span> <span class="o">=</span> <span class="n">app_parameters</span>
+    <span class="n">hltmppu_template</span><span class="o">.</span><span class="n">RestartParameters</span> <span class="o">=</span> <span class="n">app_parameters</span>
+    <span class="n">hltmppu_template</span><span class="o">.</span><span class="n">InitTimeout</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">hltmppu_main</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Binary&quot;</span><span class="p">,</span> <span class="s">&quot;HLTMPPU_main&quot;</span><span class="p">)</span>
+    <span class="n">hltmppu_template</span><span class="o">.</span><span class="n">Program</span> <span class="o">=</span> <span class="n">hltmppu_main</span>
+    <span class="n">hltmppu_template</span><span class="o">.</span><span class="n">RestartableDuringRun</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="n">hltmppu_template</span>
+</div>
+<div class="viewcode-block" id="create_template_applications"><a class="viewcode-back" href="../../common.html#yapm.common.create_template_applications">[docs]</a><span class="k">def</span> <span class="nf">create_template_applications</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">dcm_only</span><span class="p">,</span> <span class="n">hltpu_only</span><span class="p">,</span>
+                                 <span class="n">sfos_exist</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the template applications for the HLT Segment(s) and return</span>
+<span class="sd">    a list containing them to be used directly as input to the</span>
+<span class="sd">    TemplateApplications relation of an HLT Segment.  The arguments</span>
+<span class="sd">    serve as directives to know which applications to create and for</span>
+<span class="sd">    their internal parameter tuning.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      dcm_only -- indicates whether this is a DCM only</span>
+<span class="sd">                  configuration (boolean)</span>
+<span class="sd">                  </span>
+<span class="sd">      hltpu_only -- indicates whether this is</span>
+<span class="sd">                    a PU only configuration (boolean)</span>
+<span class="sd">                    </span>
+<span class="sd">      sfos_exist -- indicates whether there are SFOs</span>
+<span class="sd">                    in the farm description (boolean)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      A list containing the template applications created based</span>
+<span class="sd">      on the arguments given to the function.</span>
+<span class="sd">      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dcm_only</span><span class="p">:</span>
+        <span class="n">templ_apps</span> <span class="o">=</span> <span class="n">create_dcm_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">sfos_exist</span><span class="p">,</span>
+                                            <span class="n">dcm_only</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">hltpu_only</span><span class="p">:</span>
+        <span class="n">templ_apps</span> <span class="o">=</span> <span class="n">create_pu_apps</span><span class="p">(</span><span class="n">config_db</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">templ_apps</span> <span class="o">=</span> <span class="p">(</span><span class="n">create_dcm_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">sfos_exist</span><span class="p">,</span>
+                                             <span class="n">dcm_only</span><span class="p">)</span> <span class="o">+</span>
+                      <span class="n">create_pu_apps</span><span class="p">(</span><span class="n">config_db</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">templ_apps</span>
+</div>
+<div class="viewcode-block" id="create_hltrc_application"><a class="viewcode-back" href="../../common.html#yapm.common.create_hltrc_application">[docs]</a><span class="k">def</span> <span class="nf">create_hltrc_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an HLTRC application.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config_rules</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;ConfigurationRuleBundle&quot;</span><span class="p">,</span>
+                                       <span class="s">&quot;DefaultConfigurationRuleBundle&quot;</span><span class="p">)</span>
+    <span class="n">hltpu_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;hltpu_dal&quot;</span><span class="p">,</span> <span class="s">&quot;daq/schema/HLTMPPU.schema.xml&quot;</span><span class="p">)</span>
+
+    <span class="n">hlt_data_source</span> <span class="o">=</span> <span class="n">hltpu_dal</span><span class="o">.</span><span class="n">HLTDFDCMBackend</span><span class="p">(</span><span class="s">&quot;hltDataSource&quot;</span><span class="p">)</span>
+    <span class="n">hlt_data_source</span><span class="o">.</span><span class="n">library</span> <span class="o">=</span> <span class="s">&quot;dfinterfaceDcm&quot;</span>
+
+    <span class="n">hlt_mon_service</span> <span class="o">=</span> <span class="n">hltpu_dal</span><span class="o">.</span><span class="n">HLTMonInfoImpl</span><span class="p">(</span><span class="s">&quot;MonInfoService&quot;</span><span class="p">)</span>
+
+    <span class="n">hlt_mon_service</span><span class="o">.</span><span class="n">ConfigurationRules</span> <span class="o">=</span> <span class="n">config_rules</span>
+
+    <span class="c">#now time to create the actual HLTMPPU application</span>
+    <span class="n">hltrc_app</span> <span class="o">=</span> <span class="n">hltpu_dal</span><span class="o">.</span><span class="n">HLTRCApplication</span><span class="p">(</span><span class="s">&quot;HLTRC&quot;</span><span class="p">)</span>
+    <span class="n">hltrc_app</span><span class="o">.</span><span class="n">DataSource</span> <span class="o">=</span> <span class="n">hlt_data_source</span>
+    <span class="n">hltrc_app</span><span class="o">.</span><span class="n">InfoService</span> <span class="o">=</span> <span class="n">hlt_mon_service</span>
+    <span class="n">hltrc_bin</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Binary&quot;</span><span class="p">,</span> <span class="s">&quot;HLTRC_main&quot;</span><span class="p">)</span>
+    <span class="n">hltrc_app</span><span class="o">.</span><span class="n">Program</span> <span class="o">=</span> <span class="n">hltrc_bin</span>
+    
+    <span class="k">return</span> <span class="n">hltrc_app</span>
+
+    </div>
+<div class="viewcode-block" id="create_dcm_application"><a class="viewcode-back" href="../../common.html#yapm.common.create_dcm_application">[docs]</a><span class="k">def</span> <span class="nf">create_dcm_application</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">sfos_exist</span><span class="p">,</span> <span class="n">standalone</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a DCM application object using the arguments to</span>
+<span class="sd">    tune its parameters and return a list containing the</span>
+<span class="sd">    application.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      sfos_exist -- indicates whether there are SFOs</span>
+<span class="sd">                    in the farm description (boolean)</span>
+<span class="sd">                    </span>
+<span class="sd">      standalone -- indicates whether this is a DCM only</span>
+<span class="sd">                    configuration (boolean)</span>
+<span class="sd">      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dcm_main</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Binary&quot;</span><span class="p">,</span> <span class="s">&quot;dcm_main&quot;</span><span class="p">)</span>
+
+    <span class="n">config_rules</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;ConfigurationRuleBundle&quot;</span><span class="p">,</span>
+                                       <span class="s">&quot;DefaultConfigurationRuleBundle&quot;</span><span class="p">)</span>
+    <span class="n">efio_config</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;EFIOConfiguration&quot;</span><span class="p">,</span>
+                                      <span class="s">&quot;EFIO-Configuration-1&quot;</span><span class="p">)</span>
+    <span class="n">dcm_dal</span> <span class="o">=</span> <span class="n">dal_module</span><span class="p">(</span><span class="s">&quot;is_dal&quot;</span><span class="p">,</span> <span class="s">&#39;daq/schema/dcm.schema.xml&#39;</span><span class="p">)</span>
+
+    <span class="c">#sources</span>
+    <span class="n">hltsv_l1source</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmHltsvL1Source</span><span class="p">(</span><span class="s">&quot;hltsv_l1source&quot;</span><span class="p">)</span>
+    <span class="n">dummy_source</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmDummyL1Source</span><span class="p">(</span><span class="s">&quot;DCMDummyL1Source-1&quot;</span><span class="p">)</span>
+    
+    <span class="c">#data collectors</span>
+    <span class="n">dcm_ros_dc</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmRosDataCollector</span><span class="p">(</span><span class="s">&quot;dcm_ros_dc&quot;</span><span class="p">)</span>
+    <span class="n">dcm_ros_dc</span><span class="o">.</span><span class="n">nRequestCredits</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">dcm_dummy_dc</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmDummyDataCollector</span><span class="p">(</span><span class="s">&quot;DCMDummyDataCollector&quot;</span><span class="p">)</span>
+    
+    <span class="c">#processor applications</span>
+    <span class="n">dcm_dummy_processor</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmDummyProcessor</span><span class="p">(</span><span class="s">&quot;dcm_dummy_processor&quot;</span><span class="p">)</span>
+    <span class="n">dcm_hltpu_processor</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmHltpuProcessor</span><span class="p">(</span><span class="s">&quot;dcm_hltpu_processor&quot;</span><span class="p">)</span>
+
+    <span class="c">#output applications</span>
+    <span class="n">dcm_file_output</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmFileOutput</span><span class="p">(</span><span class="s">&quot;dcm_file_output&quot;</span><span class="p">)</span>
+    <span class="n">dcm_file_output</span><span class="o">.</span><span class="n">storageAcceptance</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dcm_efio_output</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmSfoEfioOutput</span><span class="p">(</span><span class="s">&quot;DcmSfoEfioOutput-1&quot;</span><span class="p">)</span>
+    <span class="n">dcm_efio_output</span><span class="o">.</span><span class="n">EfioConfiguration</span> <span class="o">=</span> <span class="n">efio_config</span>
+    <span class="n">dcm_sfo_output</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmSfoOutput</span><span class="p">(</span><span class="s">&quot;SFO-OutConfiguration-1&quot;</span><span class="p">)</span>
+    
+    <span class="n">dcm_app</span> <span class="o">=</span> <span class="n">dcm_dal</span><span class="o">.</span><span class="n">DcmApplication</span><span class="p">(</span><span class="s">&quot;dcm&quot;</span><span class="p">)</span>
+    <span class="n">dcm_app</span><span class="o">.</span><span class="n">RestartableDuringRun</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">dcm_app</span><span class="o">.</span><span class="n">l1Source</span> <span class="o">=</span> <span class="n">hltsv_l1source</span>
+    <span class="n">dcm_app</span><span class="o">.</span><span class="n">dataCollector</span> <span class="o">=</span> <span class="n">dcm_ros_dc</span>
+    <span class="k">if</span> <span class="n">standalone</span><span class="p">:</span>
+        <span class="n">dcm_app</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">dcm_dummy_processor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dcm_app</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">dcm_hltpu_processor</span>
+        
+    <span class="k">if</span> <span class="n">sfos_exist</span><span class="p">:</span>
+        <span class="n">dcm_app</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">dcm_efio_output</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dcm_app</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">dcm_file_output</span>
+
+    <span class="n">dcm_app</span><span class="o">.</span><span class="n">Program</span> <span class="o">=</span> <span class="n">dcm_main</span>
+    <span class="n">dcm_app</span><span class="o">.</span><span class="n">ConfigurationRules</span> <span class="o">=</span> <span class="n">config_rules</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">dcm_app</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="create_aggregator_app"><a class="viewcode-back" href="../../common.html#yapm.common.create_aggregator_app">[docs]</a><span class="k">def</span> <span class="nf">create_aggregator_app</span><span class="p">(</span><span class="n">config_db</span><span class="p">,</span> <span class="n">script_name</span><span class="p">,</span> <span class="n">default_host</span><span class="p">,</span>
+                          <span class="n">segment_name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an aggregator application, either a rack level one</span>
+<span class="sd">    or a top-level one and return it.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      script_name -- name of the aggregator script</span>
+<span class="sd">      </span>
+<span class="sd">      default_host -- where the aggregator app should run</span>
+<span class="sd">      </span>
+<span class="sd">      segment name -- name of segment where it runs(default &quot;&quot; for top level)</span>
+<span class="sd">      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dal_script_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">script_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c">##     aggregator_script = dal.Script(dal_script_name)</span>
+<span class="c">##     aggregator_script.BinaryName = script_name</span>
+<span class="c">##     repository = config_db.getObject(&quot;SW_Repository&quot;, &quot;Online&quot;)</span>
+<span class="c">##     aggregator_script.BelongsTo = repository</span>
+<span class="c">##     config_db.updateObjects([aggregator_script])</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">segment_name</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">aggregator_script</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Script&quot;</span><span class="p">,</span> <span class="s">&quot;aggregator&quot;</span><span class="p">)</span>
+        <span class="n">aggregator_app</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="s">&quot;DCM-&quot;</span> <span class="o">+</span> <span class="n">aggregator_script</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span>
+                                         <span class="n">segment_name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">aggregator_script</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&quot;Script&quot;</span><span class="p">,</span> <span class="s">&quot;top_aggregator&quot;</span><span class="p">)</span>
+        <span class="n">aggregator_app</span> <span class="o">=</span> <span class="n">dal</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="s">&quot;DCM-&quot;</span> <span class="o">+</span> <span class="n">aggregator_script</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">Program</span> <span class="o">=</span> <span class="n">aggregator_script</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">RunsOn</span> <span class="o">=</span> <span class="n">default_host</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">Parameters</span> <span class="o">=</span> <span class="s">&quot;-T DCM&quot;</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">RestartParameters</span> <span class="o">=</span> <span class="s">&quot;-T DCM&quot;</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">InitTimeout</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">RestartableDuringRun</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">env_tdaq_python_home</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&#39;Variable&#39;</span><span class="p">,</span> <span class="s">&#39;TDAQ_PYTHON_HOME&#39;</span><span class="p">)</span>
+    <span class="n">env_pyhtonpath</span> <span class="o">=</span> <span class="n">config_db</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s">&#39;Variable&#39;</span><span class="p">,</span> <span class="s">&#39;PYTHONPATH&#39;</span><span class="p">)</span>
+    <span class="n">aggregator_app</span><span class="o">.</span><span class="n">ProcessEnvironment</span> <span class="o">=</span> <span class="p">[</span><span class="n">env_tdaq_python_home</span><span class="p">,</span> <span class="n">env_pyhtonpath</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">aggregator_app</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yapm 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Argyris Zardilis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

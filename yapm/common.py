@@ -63,6 +63,7 @@ def create_pu_apps(config_db):
     """
     Create the HLTMPPU template and the HLTRC application and
     return a list containing them.
+    
     """
     hltmppu_template = create_hltmppu_template(config_db)
     hltrc_app = create_hltrc_application(config_db)
@@ -71,6 +72,7 @@ def create_pu_apps(config_db):
 def create_hltmppu_template(config_db):
     """
     Create the HLTMPPU template application and return it.
+    
     """
     hltpu_dal = dal_module("hltpu_dal", "daq/schema/HLTMPPU.schema.xml")
     app_parameters = "-n ${TDAQ_APPLICATION_NAME} -d libHLTMPPU.so"
@@ -96,14 +98,17 @@ def create_template_applications(config_db, dcm_only, hltpu_only,
     Arguments:
       dcm_only -- indicates whether this is a DCM only
                   configuration (boolean)
+                  
       hltpu_only -- indicates whether this is
                     a PU only configuration (boolean)
+                    
       sfos_exist -- indicates whether there are SFOs
                     in the farm description (boolean)
 
     Returns:
       A list containing the template applications created based
       on the arguments given to the function.
+      
     """
     if dcm_only:
         templ_apps = create_dcm_application(config_db, sfos_exist,
@@ -120,6 +125,7 @@ def create_template_applications(config_db, dcm_only, hltpu_only,
 def create_hltrc_application(config_db):
     """
     Create an HLTRC application.
+    
     """
     config_rules = config_db.getObject("ConfigurationRuleBundle",
                                        "DefaultConfigurationRuleBundle")
@@ -151,6 +157,7 @@ def create_dcm_application(config_db, sfos_exist, standalone):
     Arguments:
       sfos_exist -- indicates whether there are SFOs
                     in the farm description (boolean)
+                    
       standalone -- indicates whether this is a DCM only
                     configuration (boolean)
       
@@ -210,8 +217,11 @@ def create_aggregator_app(config_db, script_name, default_host,
 
     Arguments:
       script_name -- name of the aggregator script
+      
       default_host -- where the aggregator app should run
+      
       segment name -- name of segment where it runs(default "" for top level)
+      
     """
     dal_script_name = os.path.splitext(script_name)[0]
     aggregator_script = dal.Script(dal_script_name)

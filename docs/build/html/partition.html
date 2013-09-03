@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yapm.partition &mdash; yapm 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yapm 1.0 documentation" href="index.html" />
+    <link rel="prev" title="yapm.hlt" href="hlt.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hlt.html" title="yapm.hlt"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">yapm 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-yapm.partition">
+<span id="yapm-partition"></span><h1>yapm.partition<a class="headerlink" href="#module-yapm.partition" title="Permalink to this headline">¶</a></h1>
+<p>This module creates a dal object representation of a partition and directly
+related objects(counters etc.)</p>
+<dl class="function">
+<dt id="yapm.partition.create_counters">
+<tt class="descclassname">yapm.partition.</tt><tt class="descname">create_counters</tt><big>(</big><em>config_db</em><big>)</big><a class="reference internal" href="_modules/yapm/partition.html#create_counters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.partition.create_counters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the counters object to be used in the Igui display and return it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yapm.partition.create_partition">
+<tt class="descclassname">yapm.partition.</tt><tt class="descname">create_partition</tt><big>(</big><em>**part_args</em><big>)</big><a class="reference internal" href="_modules/yapm/partition.html#create_partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yapm.partition.create_partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create partition object and return it.</p>
+<dl class="docutils">
+<dt>Keyword Arguments:</dt>
+<dd><p class="first">config_db &#8211; configuration database</p>
+<p>part_name &#8211; name of the partition</p>
+<p>repository_root &#8211; path to be used as repository root</p>
+<p>segments &#8211; list of DAL segments to be added to the partition</p>
+<p>data_networks &#8211; addresses of the networks to be used</p>
+<p>multicast_address &#8211; address to be used as multicast address</p>
+<dl class="last docutils">
+<dt>default_host &#8211; a DAL Computer object serving as the</dt>
+<dd>main host for the partition</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="hlt.html"
+                        title="previous chapter">yapm.hlt</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/partition.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hlt.html" title="yapm.hlt"
+             >previous</a> |</li>
+        <li><a href="index.html">yapm 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Argyris Zardilis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
