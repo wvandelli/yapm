@@ -19,6 +19,8 @@ DEFAULT_INCLUDES = ['daq/hw/hosts.data.xml',
                     'daq/sw/tags.data.xml',
                     'daq/sw/common-templates.data.xml'
                     ]
+IMPORT_ERROR_MESSAGE = "Couldn't import module provided: %s"
+ATTR_ERROR_MESSAGE = "Couldn't find dictionary with default name(farm_dict) in module provided"
 
 def get_post_process(module_name):
     post_process = imp.find_module(module_name)
@@ -42,7 +44,15 @@ def get_farm_dict(module_name):
     
 def create_config_db(args):
     hlt_segments = []
-    farm_dict = get_farm_dict(args.farm_file)
+    try:
+        farm_dict = get_farm_dict(args.farm_file)
+    except ImportError:
+        print(IMPORT_ERROR_MESSAGE % args.farm_file)
+        return
+    except AttributeError:
+        print(ATTR_ERROR_MESSAGE)
+        return
+    #farm_dict = get_farm_dict(args.farm_file)
 
     s_time = time.time()
     full_includes = DEFAULT_INCLUDES + args.extra_includes
@@ -62,15 +72,15 @@ def create_config_db(args):
     for dcm in farm_dict['dcms']:
         dcm['config_db'] = config_db
         dcm['templ_apps'] = templ_apps
-        dcm_segment = yapm.hlt.create_hlt_segment(**dcm)
+        dcm_segment = yapm.hlt.create_dcm_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hltsv_segment = yapm.hltsv.create_hltsv_segment(config_db,
-                                                    farm_dict['default_host'],
-                                                    farm_dict['hltsv'],
-                                                    farm_dict['sfos'],
-                                                    hlt_segments)
-    config_db.addObjects([hltsv_segment])
+    hlt_segment = (yapm.hltsv.create_hlt_segment(config_db,
+                                               farm_dict['default_host'],
+                                               farm_dict['hltsv'],
+                                               farm_dict['sfos'],
+                                               hlt_segments))
+    config_db.addObjects([hlt_segment])
     print(time.time() - s_time)
     post_process(args, config_db)
 
@@ -78,8 +88,8 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--farm-file",
                         help='Python module that contains a dictionary that contains a\
-                              dictionary \n named \'farm_dict\' that contains a \
-                              description of the farm.',
+                              dictionary \n named \'farm_dict\' that contains a description\
+                              of the farm.',
                         required=True)
     parser.add_argument("-I", "--extra-includes", nargs='+',
                         help='Extra OKS includes for the output database.',
