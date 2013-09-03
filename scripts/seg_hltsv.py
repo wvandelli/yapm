@@ -62,15 +62,15 @@ def create_config_db(args):
     for dcm in farm_dict['dcms']:
         dcm['config_db'] = config_db
         dcm['templ_apps'] = templ_apps
-        dcm_segment = yapm.hlt.create_dcm_segment(**dcm)
+        dcm_segment = yapm.hlt.create_hlt_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hlt_segment = (yapm.hltsv.create_hlt_segment(config_db,
-                                               farm_dict['default_host'],
-                                               farm_dict['hltsv'],
-                                               farm_dict['sfos'],
-                                               hlt_segments))
-    config_db.addObjects([hlt_segment])
+    hltsv_segment = yapm.hltsv.create_hltsv_segment(config_db,
+                                                    farm_dict['default_host'],
+                                                    farm_dict['hltsv'],
+                                                    farm_dict['sfos'],
+                                                    hlt_segments)
+    config_db.addObjects([hltsv_segment])
     print(time.time() - s_time)
     post_process(args, config_db)
 
@@ -78,8 +78,8 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--farm-file",
                         help='Python module that contains a dictionary that contains a\
-                              dictionary \n named \'farm_dict\' that contains a description\
-                              of the farm.',
+                              dictionary \n named \'farm_dict\' that contains a \
+                              description of the farm.',
                         required=True)
     parser.add_argument("-I", "--extra-includes", nargs='+',
                         help='Extra OKS includes for the output database.',
