@@ -10,11 +10,11 @@ sanity of the provided command line arguments and the farm dictionary
 
 from pm.project import Project
 import argparse
-import pm_ros
-import pm_common
-import pm_hltsv
-import pm_hlt
-import pm_partition
+import yapm.ros
+import yapm.common
+import yapm.hltsv
+import yapm.hlt
+import yapm.partition
 import imp
 
 IMPORT_ERROR_MESSAGE = "Couldn't import module provided: %s"
@@ -39,7 +39,7 @@ def create_config_db(args):
         print(ATTR_ERROR_MESSAGE)
         return
 
-    full_includes = pm_common.DEFAULT_INCLUDES + args.extra_includes
+    full_includes = yapm.common.DEFAULT_INCLUDES + args.extra_includes
     config_db = Project(args.partition_name + ".data.xml", full_includes)
 
     if args.local:
@@ -49,27 +49,23 @@ def create_config_db(args):
 
         config_db.updateObjects([local_host])
 
-    pm_common.create_config_rules(config_db)
-    pm_common.create_template_applications(config_db, args.dcm_only,
-                                           args.hltpu_only, farm_dict['sfos'])
-
+    yapm.common.create_config_rules(config_db)
+    templ_apps = yapm.common.create_template_applications(config_db, args.dcm_only,
+                                                          args.hltpu_only,
+                                                          farm_dict['sfos'])
     for dcm in farm_dict['dcms']:
-        dcm['hltpu_only'] = args.hltpu_only
-        dcm['dcm_only'] = args.dcm_only
         dcm['config_db'] = config_db
-        dcm_segment = pm_hlt.create_dcm_segment(**dcm)
+        dcm['templ_apps'] = templ_apps
+        dcm_segment = yapm.hlt.create_dcm_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hlt_segment = (pm_hltsv.create_hlt_segment(config_db,
-                                               farm_dict['default_host'],
-                                               farm_dict['hltsv'],
-                                               farm_dict['sfos']))
-    pm_hltsv.add_dcm_segments(config_db, hlt_segments)
+    hlt_segment = (yapm.hltsv.create_hlt_segment(config_db,
+                                                 farm_dict['default_host'],
+                                                 farm_dict['hltsv'],
+                                                 farm_dict['sfos'],
+                                                 hlt_segments))
     part_segments.append(hlt_segment)
-
-    #ros_segment = pm_ros.create_ros_segment(config_db)
-    #part_segments.append(ros_segment)
-
+    
     part_params = {
                    'config_db'         : config_db,
                    'part_name'         : args.partition_name,
@@ -79,8 +75,9 @@ def create_config_db(args):
                    'multicast_address' : args.multicast_address,
                    'default_host'      : farm_dict['default_host']
                    }
-
-    pm_partition.create_partition(**part_params)
+    
+    part = yapm.partition.create_partition(**part_params)
+    config_db.addObjects([part])
 
 def get_parser():
     parser = argparse.ArgumentParser()
