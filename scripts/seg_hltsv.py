@@ -24,7 +24,8 @@ ATTR_ERROR_MESSAGE = "Couldn't find dictionary with default name(farm_dict) in m
 
 def get_post_process(module_name):
     post_process = imp.find_module(module_name)
-    post_process_module = imp.load_module(module_name, post_process[0], post_process[1],
+    post_process_module = imp.load_module(module_name, post_process[0],
+                                          post_process[1],
                                           post_process[2])
     return post_process_module.modify
 
