@@ -72,8 +72,8 @@ def create_config_db(args):
     for hlt in farm_dict['hlts']:
         hlt['config_db'] = config_db
         hlt['templ_apps'] = templ_apps
-        hlt_segment = yapm.hlt.create_dcm_segment(**dcm)
-        hlt_segments.append(dcm_segment)
+        hlt_segment = yapm.hlt.create_hlt_segment(**hlt)
+        hlt_segments.append(hlt_segment)
 
     hltsv_segment = (yapm.hltsv.create_hltsv_segment(config_db,
                                                      farm_dict['default_host'],

@@ -3,10 +3,10 @@ This module is used to create a farm dictionary object used
 by the partition-maker script
 """
 import pm
-from farm_utils import dcm_segment, partition, get_hosts
+from farm_utils import hlt_segment, partition, get_hosts
 from pprint import pprint
 
-#create 2 dcm segments
+#create 2 hlt segments
 testbed_hosts = get_hosts(['daq/hw/hosts.data.xml'])
 hlt1_hosts = pm.farm.subselect_pattern(testbed_hosts,
                                        'pc-tbed-r3-[%02d-%02d]' % (1,10))
@@ -27,7 +27,7 @@ controller_host = testbed_hosts['pc-tbed-r3-02']
 sfos = pm.farm.subselect_pattern(testbed_hosts,
                                  'pc-tbed-r3-[%02d-%02d]' % (21,22))
 
-farm_dict = partition(controller_host, dcm_segments,
+farm_dict = partition(controller_host, hlt_segments,
                       hltsv_host, sfos.values())
 pprint(farm_dict)
 
