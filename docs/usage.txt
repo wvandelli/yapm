@@ -1,0 +1,38 @@
+Example usage:
+
+HLTSV Segment creation:
+=======================
+Create a standard HLTSV Segment with everything(farm description coming from a python dictionary called farm_dict in a python module called farm_gen):
+tdaq_python scripts/seg_hltsv.py -f farm_gen
+
+Create a standard DCM only HLTSV segment:
+tdaq_python scripts/seg_hltsv.py -f farm_gen --dcm-only
+
+Create a standard HLTPU only HLTSV segment:
+tdaq_python scripts/seg_hltsv.py -farm_gen --hltpu-only
+
+Create a standard HLTSV Segment with some extra includes:
+tdaq_python scripts/seg_hltsv.py -f farm_gen -I daq/segments/PuDummy.data.xml daq/sw/det-tdaq-repository.data.xml
+
+Create a custom DCM only HLTSV Segment with some extra includes(using a custom modifyfunction contained in python file called post_change.py):
+tdaq_python scripts/seg_hltsv.py -f farm_gen_p1 -z post_change -I daq/segments/PuDummy.data.xml daq/sw/det-tdaq-repository.data.xml --dcm-only
+
+
+Partition creation:
+===================
+Create a standard partition named azar_test with farm description coming from farm_gen
+tdaq_python scripts/part_evo.py -p azar_test -f farm_gen
+
+Create a standard DCM-only partition named azar_test with farm description coming from farm_gen:
+
+tdaq_python scripts/part_evo.py -p azar_test -f farm_gen --dcm-only
+
+Create a standard DCM-only partition named azar_test with farm description coming from farm_gen with some extra includes and repository root:
+
+tdaq_python scripts/part_evo.py -p azar_test -f farm_gen -r /tbed/user/azardili/partition_maker/installed --dcm-only -I PuDummy.data.xml
+
+Create a standard DCM-only partition named azar_test with farm description coming from farm_gen with some extra includes and repository root. Also specifying addresses for data networks and a multicast address:
+
+tdaq_python scripts/part_evo.py -p azar_test -f farm_gen -D 10.193.64.0/255.255.254.0 10.193.128.0/255.255.254.0 -m 224.100.1.1/10.193.64.0 -r /tbed/user/azardili/partition_maker/installed --dcm-only -I PuDummy.data.xml
+
+
