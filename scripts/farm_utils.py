@@ -10,25 +10,25 @@ def get_hosts(host_files):
         
     return hosts
 
-def dcm_segment(name, default_host, hosts, is_resource, is_histogram):
-    """returns a dictionary representation of a dcm segment as expected by
+def hlt_segment(name, default_host, hosts, is_resource, is_histogram):
+    """returns a dictionary representation of an HLT segment as expected by
     the partition making script
     """
-    dcm_dict = {}
-    dcm_dict['name'] = name
-    dcm_dict['default_host'] = default_host
-    dcm_dict['hosts'] = hosts
-    dcm_dict['is_resource'] = is_resource
-    dcm_dict['is_histogram'] = is_histogram
-    return dcm_dict
+    hlt_dict = {}
+    hlt_dict['name'] = name
+    hlt_dict['default_host'] = default_host
+    hlt_dict['hosts'] = hosts
+    hlt_dict['is_resource'] = is_resource
+    hlt_dict['is_histogram'] = is_histogram
+    return hlt_dict
 
-def partition(default_host, dcms, hltsv, sfos):
-    """returns a dictionary representation of a dcm segment as expected by
+def partition(default_host, hlts, hltsv, sfos):
+    """returns a dictionary representation of a partition as expected by
     the partition making script
     """
     farm_dict = {}
     farm_dict['default_host'] = default_host
-    farm_dict['dcms'] = dcms
+    farm_dict['hlts'] = hlts
     farm_dict['hltsv'] = hltsv
     farm_dict['sfos'] = sfos
 

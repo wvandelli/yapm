@@ -69,18 +69,18 @@ def create_config_db(args):
     templ_apps = yapm.common.create_template_applications(config_db, args.dcm_only,
                                                           args.hltpu_only,
                                                           farm_dict['sfos'])
-    for dcm in farm_dict['dcms']:
-        dcm['config_db'] = config_db
-        dcm['templ_apps'] = templ_apps
-        dcm_segment = yapm.hlt.create_dcm_segment(**dcm)
+    for hlt in farm_dict['hlts']:
+        hlt['config_db'] = config_db
+        hlt['templ_apps'] = templ_apps
+        hlt_segment = yapm.hlt.create_dcm_segment(**dcm)
         hlt_segments.append(dcm_segment)
 
-    hlt_segment = (yapm.hltsv.create_hlt_segment(config_db,
-                                               farm_dict['default_host'],
-                                               farm_dict['hltsv'],
-                                               farm_dict['sfos'],
-                                               hlt_segments))
-    config_db.addObjects([hlt_segment])
+    hltsv_segment = (yapm.hltsv.create_hltsv_segment(config_db,
+                                                     farm_dict['default_host'],
+                                                     farm_dict['hltsv'],
+                                                     farm_dict['sfos'],
+                                                     hlt_segments))
+    config_db.addObjects([hltsv_segment])
     print(time.time() - s_time)
     post_process(args, config_db)
 
