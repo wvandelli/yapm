@@ -41,7 +41,7 @@ def create_sfo_application(config_db, number, host):
     sfo_app.RunsOn = host
     sfo_binary = config_db.getObject("Binary", "SFOng_main")
     sfo_app.Program = sfo_binary
-    sfo_app.SFOConfiguration = sfo_config
+    sfo_app.SFOngConfiguration = sfo_config
 
     dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
     dc_is_resource = dcm_dal.DC_ISResourceUpdate("DCAppConf-" + number +
