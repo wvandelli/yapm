@@ -232,16 +232,16 @@ def create_aggregator_app(config_db, script_name, default_host,
     
     if not segment_name == "":
         #aggregator_script = config_db.getObject("Script", "aggregator")
-        aggregator_app = dal.Application("DCM-" + aggregator_script.id + "-" +
-                                         segment_name)
+        aggregator_app = dal.CustomLifetimeApplication("DCM-" + aggregator_script.id + "-" + segment_name)
     else:
         #aggregator_script = config_db.getObject("Script", "top_aggregator")
-        aggregator_app = dal.Application("DCM-" + aggregator_script.id)
+        aggregator_app = dal.CustomLifetimeApplication("DCM-" + aggregator_script.id)
     aggregator_app.Program = aggregator_script
     aggregator_app.RunsOn = default_host
     aggregator_app.Parameters = "-T DCM"
     aggregator_app.RestartParameters = "-T DCM"
     aggregator_app.InitTimeout = 0
+    aggregator_app.Lifetime = "Boot_Shutdown"
     aggregator_app.RestartableDuringRun = True
     env_tdaq_python_home = config_db.getObject('Variable', 'TDAQ_PYTHON_HOME')
     env_pyhtonpath = config_db.getObject('Variable', 'PYTHONPATH')
