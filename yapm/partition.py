@@ -38,9 +38,8 @@ def create_counters(config_db):
 
     daq_counters = dal.IS_InformationSources("DAQ_Counters")
     daq_counters.LVL1 = l1_rates
-    daq_counters.LVL2 = l2_rates
-    daq_counters.EB = eb_rates
-    daq_counters.EF = ef_rates
+    daq_counters.HLT = ef_rates
+    daq_counters.Recording = ef_rates
     
     return daq_counters
 
@@ -102,8 +101,8 @@ def create_partition(**part_args):
     daq_counters = create_counters(config_db)
     partition.IS_InformationSource = daq_counters
     
-    pu_config_db = Project("PuDummy.data.xml")
-    trig_config = pu_config_db.getObject("TriggerConfiguration", "TrigConf-1")
-    partition.TriggerConfiguration = trig_config
+    #pu_config_db = Project("PuDummy.data.xml")
+    #trig_config = pu_config_db.getObject("TriggerConfiguration", "TrigConf-1")
+    #partition.TriggerConfiguration = trig_config
 
     return partition
