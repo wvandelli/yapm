@@ -43,20 +43,6 @@ def create_sfo_application(config_db, number, host):
     sfo_app.Program = sfo_binary
     sfo_app.SFOngConfiguration = sfo_config
 
-    dcm_dal = dal_module("is_dal", 'daq/schema/dcm.schema.xml')
-    dc_is_resource = dcm_dal.DC_ISResourceUpdate("DCAppConf-" + number +
-                                                 "-ISResourceUpdate-SFO")
-    dc_is_resource.name = "SFO"
-    dc_is_resource.delay = 10
-    dc_is_resource.activeOnNodes.append("SFO")
-
-    dc_app_config = dcm_dal.DCApplicationConfig("DCAppConfig-"+number)
-    dc_app_config.ISDefaultRsrcUpdateInterval = 5
-    dc_app_config.ISDefaultServer = "*DF"
-    dc_app_config.refDC_ISResourceUpdate.append(dc_is_resource)
-
-    sfo_app.DFApplicationConfig = dc_app_config
-    
     return sfo_app
 
 def create_hltsv_app(config_db, hltsv_host):
@@ -127,7 +113,7 @@ def create_hltsv_segment(config_db, default_host, hltsv_host, sfos, hlt_segments
                                                default_host)
     hltsv_segment.Applications = [top_aggregator_app]
 
-    hltsv_segment.DefaultHost = default_host
+    hltsv_segment.Hosts = [default_host]
 
     #infrastructure applications
     is_server = config_db.getObject("InfrastructureTemplateApplication",
