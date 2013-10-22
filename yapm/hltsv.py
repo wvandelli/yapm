@@ -21,7 +21,8 @@ def create_sfo_application(config_db, number, host):
     """
     efio_config = config_db.getObject("EFIOConfiguration", "EFIO-Configuration-1")
     #first create the app configuration
-    sfo_config = DFdal.SFOConfiguration("SFO-Configuration-" + number)
+    SFOdal = dal_module('SFOdal','daq/schema/SFOng.schema.xml',[DFdal,dal])
+    sfo_config = SFOdal.SFOngConfiguration("SFO-Configuration-" + number)
     sfo_config.BufferSize_kB = 10240
     sfo_config.DataRecordingEnabled = False
     sfo_config.LumiBlockEnabled = False
@@ -32,7 +33,7 @@ def create_sfo_application(config_db, number, host):
     sfo_config.EFIOConfiguration = efio_config
 
     #now create the application itself
-    sfo_app = DFdal.SFOApplication("SFO-"+number)
+    sfo_app = SFOdal.SFOngApplication("SFO-"+number)
     sfo_app.ActionTimeout = 30
     sfo_app.IfError = "Restart"
     sfo_app.RestartableDuringRun = True
