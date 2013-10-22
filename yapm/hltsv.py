@@ -37,7 +37,7 @@ def create_sfo_application(config_db, number, host):
     sfo_app.ActionTimeout = 30
     sfo_app.IfError = "Restart"
     sfo_app.RestartableDuringRun = True
-    sfo_app.IfDies = "Restart"
+    sfo_app.IfExitsUnexpectedly = "Restart"
     sfo_app.RunsOn = host
     sfo_binary = config_db.getObject("Binary", "SFOng_main")
     sfo_app.Program = sfo_binary
