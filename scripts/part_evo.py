@@ -63,7 +63,7 @@ def create_config_db(args):
     templ_apps = yapm.common.create_template_applications(config_db, args.dcm_only,
                                                           args.hltpu_only,
                                                           farm_dict['sfos'])
-    for dcm in farm_dict['dcms']:
+    for dcm in farm_dict['hlts']:
         dcm['config_db'] = config_db
         dcm['templ_apps'] = templ_apps
         dcm_segment = yapm.hlt.create_hlt_segment(**dcm)
