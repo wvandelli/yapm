@@ -52,12 +52,11 @@ def create_hlt_segment(**dcm_args):
     mon_is = config_db.getObject("MIGApplication", "DefMIG-IS")
     mon_oh = config_db.getObject("MIGApplication", "DefMIG-OH")
 
-    hlt_segment = dal.HLTSegment(id                   = name,
-                                 TemplateApplications = dcm_args['templ_apps'],
-                                 Resources            = [mon_is, mon_oh],
-                                 Infrastructure       = [is_server, oh_server, rconfig_db],
-                                 Applications         = [aggregator_app],
-                                 IsControlledBy       = defrc_controller,
-                                 DefaultHost          = dcm_args['default_host'],
-                                 TemplateHosts        = dcm_args['hosts'])
+    hlt_segment = dal.Segment(name)
+    hlt_segment.Applications = [aggregator_app]+dcm_args['templ_apps']
+    hlt_segment.Resources = [mon_is, mon_oh]
+    hlt_segment.Infrastructure = [is_server, oh_server, rconfig_db]
+    hlt_segment.IsControlledBy = defrc_controller
+    hlt_segment.Hosts = [dcm_args['default_host']]+dcm_args['hosts']
+    
     return hlt_segment
