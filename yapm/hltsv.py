@@ -42,6 +42,7 @@ def create_sfo_application(config_db, number, host):
     sfo_binary = config_db.getObject("Binary", "SFOng_main")
     sfo_app.Program = sfo_binary
     sfo_app.SFOngConfiguration = sfo_config
+    sfo_app.ConfigurationRules = config_db.getObject("ConfigurationRuleBundle", "DefaultConfigurationRuleBundle")
 
     return sfo_app
 
