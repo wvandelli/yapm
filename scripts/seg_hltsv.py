@@ -16,6 +16,7 @@ DEFAULT_INCLUDES = ['daq/hw/hosts.data.xml',
                     'daq/schema/HLTMPPU.schema.xml',
                     'daq/sw/repository.data.xml',
                     'daq/schema/dcm.schema.xml',
+                    'daq/schema/SFOng.schema.xml',
                     'daq/sw/tags.data.xml',
                     'daq/sw/common-templates.data.xml'
                     ]
