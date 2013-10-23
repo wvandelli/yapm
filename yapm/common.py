@@ -243,6 +243,7 @@ def create_aggregator_app(config_db, script_name, default_host,
     aggregator_app.InitTimeout = 0
     aggregator_app.Lifetime = "Boot_Shutdown"
     aggregator_app.RestartableDuringRun = True
+    aggregator_app.IfFailsToStart = "Ignore"
     env_tdaq_python_home = config_db.getObject('Variable', 'TDAQ_PYTHON_HOME')
     env_pyhtonpath = config_db.getObject('Variable', 'PYTHONPATH')
     aggregator_app.ProcessEnvironment = [env_tdaq_python_home, env_pyhtonpath]

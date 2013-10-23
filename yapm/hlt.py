@@ -53,7 +53,7 @@ def create_hlt_segment(**dcm_args):
     mon_oh = config_db.getObject("MIGApplication", "DefMIG-OH")
 
     hlt_segment = dal.Segment(name)
-    hlt_segment.Applications = [aggregator_app]+dcm_args['templ_apps']
+    hlt_segment.Applications = dcm_args['templ_apps']+[aggregator_app]
     hlt_segment.Resources = [mon_is, mon_oh]
     hlt_segment.Infrastructure = [is_server, oh_server, rconfig_db]
     hlt_segment.IsControlledBy = defrc_controller
