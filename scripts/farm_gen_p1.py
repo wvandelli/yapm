@@ -21,7 +21,7 @@ dcm_segments = []
 for rack in P1racks:
     worker_nodes = rack.nodes[0:-1]
     service_node = rack.nodes[-1]
-    dcm_segments.append(farm_utils.dcm_segment("HLT-Segment-" + rack.idx,
+    dcm_segments.append(farm_utils.hlt_segment("HLT-Segment-" + rack.idx,
                                                service_node, worker_nodes,
                                                service_node, service_node))
 
